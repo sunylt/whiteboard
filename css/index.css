@@ -1,0 +1,148 @@
+*{
+    -webkit-tap-highlight-color: transparent;
+ }
+html{
+margin:0px;
+padding: 0px;
+height:100%;
+background: #ccc;
+}
+a{
+	line-height: 0;
+}
+img{
+	border: none;
+	outline: none;
+	display: block;
+}
+body{
+	position: relative;
+	margin:0px;
+	padding: 0px;
+	background: #ccc;
+	overflow: hidden;
+	height: 100%;
+	width: 100%;
+}
+.main{
+	height: 100%;
+	width: 100%;
+}
+#drawing{
+	padding-top: 20px;
+	position: relative;
+	/*margin: 0;*/
+}
+#drawing a{
+	position: absolute;
+	cursor: pointer;
+}
+.left{
+	left: 10px;
+	top: 50%;
+}
+.right{
+	right: 10px;
+	top: 50%;
+	transform:rotate(180deg);
+	-ms-transform:rotate(180deg); 	/* IE 9 */
+	-moz-transform:rotate(180deg); 	/* Firefox */
+	-webkit-transform:rotate(180deg); /* Safari 和 Chrome */
+	-o-transform:rotate(180deg);
+}
+svg{
+	background: #fff;
+	margin: 0 auto;
+	display: block;
+}
+textarea{
+	border: 1px solid #000;
+}
+.oprate{
+	/*display: none;*/
+	box-sizing: border-box;
+	position: absolute;
+	bottom: 10px;
+	/*padding: 8px;*/
+	margin:0px auto 0;
+	text-align: center;
+	cursor: pointer;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	/*margin-bottom: 10px;*/
+}
+.oprate div, 
+.content-a-upload{
+	/*display: inline-block;*/
+	/*display: flex;*/
+	background: #fff;
+	height: 48px;
+	overflow: hidden;
+	line-height: 48px;
+	border-radius: 8px;
+	position: relative;
+	/*margin-bottom: 10px;
+	margin-left: 5px;*/
+	margin:0 3px 10px;
+}
+.content-a-upload{
+	/*height: 42px !important;*/
+	padding: 0 3px;
+}
+.content-a-upload a{
+	text-align: center;
+	text-decoration: none;
+	margin: 0;
+	/*padding: 2px;*/
+	color: #000000;
+	line-height: 48px;
+}
+.content-a-upload input {
+    position: absolute;
+    /*font-size: 100px;*/
+    height: 77px;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.oprate a{
+	display: block;
+	float: left;
+	margin: 6px 8px;
+	/*height: 50px;*/
+	/*width: 50px;*/
+	background: #fff;
+	text-align: center;
+	/*line-height: 50px;*/
+	/*border: 1px solid #000;*/
+	/*margin: 0 4px;*/
+}
+#testChoose{
+	width: 36px;
+    height: 36px;
+    box-sizing: border-box;
+    outline: none;
+    /*font-size: 20px;*/
+    font-size: 16px;
+}
+.eraserCursor{
+	cursor: -webkit-image-set(url(https://sdk.herewhite.com/resource/mouse-cursor/easer-cursor.png) 1x, url(https://sdk.herewhite.com/resource/mouse-cursor/easer-cursor%402x.png) 2x) 8 18, url(https://sdk.herewhite.com/resource/mouse-cursor/easer-cursor.jpg), auto;
+}
+.rectCursor{
+	cursor: crosshair;
+}
+.circleCursor{
+	cursor: crosshair;
+}
+.textCursor{
+	cursor: text;
+}
+.penCursor{
+	cursor: -webkit-image-set(url(https://sdk.herewhite.com/resource/mouse-cursor/pencil-cursor.png) 1x, url(https://sdk.herewhite.com/resource/mouse-cursor/pencil-cursor%402x.png) 2x) 2 22, url(https://sdk.herewhite.com/resource/mouse-cursor/pencil-cursor.jpg), auto;
+}
+.selectCursor{
+	cursor: -webkit-image-set(url(https://sdk.herewhite.com/resource/mouse-cursor/selector-cursor.png) 1x, url(https://sdk.herewhite.com/resource/mouse-cursor/selector-cursor%402x.png) 2x) 5 4, url(https://sdk.herewhite.com/resource/mouse-cursor/selector-cursor.jpg), auto;
+}
