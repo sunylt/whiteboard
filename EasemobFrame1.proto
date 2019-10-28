@@ -1,0 +1,216 @@
+syntax="proto3";
+package protobuf;
+option java_package = "com.easemob.protobuf";
+//option java_outer_classname = "EMFrame";
+//为true时生成多个java类，false在一个包装类中
+//./protoc.exe EasemobFrame.proto --java_out=../java/
+option java_multiple_files = true;
+message EMFrame{
+	//将所有字段放在需要的message中，尽量不要模拟继承，可以嵌套
+	EMRequest emRequest = 1;
+	//Response里增加错误码，msgId。rsp事件和cast事件要分开
+	EMResponse emResponse = 2;
+	ACKMsg ackMsg = 3;
+}
+
+//*******************************************************************request*******************************************
+message EMRequest{
+	ProType proType = 2;
+	string userId = 1;
+	string msgId = 7;
+
+	enum ProType{
+		UNIVERSAL = 0;
+		ENTER = 10;
+		ACTION = 20;
+		CLOSE = 30;
+		SHEET = 40;
+		BOARDCAST = 50;
+	}
+
+	oneof resquest{
+		EnterReq enterReq = 3;
+		ActionReq actionReq = 4;
+		CloseReq closeReq = 5;
+		SheetReq sheetReq = 6;
+	}
+}
+
+message EnterReq{
+	string roomId = 3;
+	string token = 4;
+}
+
+message ActionReq{
+	string roomId = 3;
+	Action action = 4;
+}
+
+message CloseReq{
+}
+
+message SheetReq{
+	MotionType motion = 1;
+	int32 index = 2;
+	enum MotionType{
+		UNIVERSAL = 0;
+		ADD = 1;
+		DELETE = 2;
+		CHOOSE = 3;
+		RELOAD = 4;
+	}
+}
+//*******************************************************************request*******************************************
+//*******************************************************************response******************************************
+
+
+message EMResponse{
+	EMRequest.ProType proType = 1;
+	string userId = 2;
+	oneof response{
+		EnterRsp enterRsp = 3;
+		ActionRsp actionRsp = 4;
+		CloseRsp closeRsp = 5;
+		SheetRsp sheetRsp = 6;
+		BoardcastResponse boardcastResponse = 7;
+	}
+
+	string msgId = 8;
+	bool result = 9;
+	string exception = 10;
+	int32 errorCode = 11;
+}
+
+message EnterRsp{
+	Confr confr = 2;
+}
+
+message Board{
+   int32 index = 1;
+   string background = 2;
+   map<string,Geometry> mapGeometry= 3;
+}
+
+message Confr{
+    string roomId = 1;
+    int32 currentIndex = 2;
+    Board currentBoard = 3;
+	string masterId = 4;
+}
+
+message ActionRsp{
+	Action action = 2;
+}
+
+message Action{
+	int32 bordIndex = 1;
+	Geometry geometry = 2;
+	Operate op = 3;
+
+	//由于编码原因，出于效率考虑，官方不推荐使用负数作为枚举值的数值。
+	enum Operate{
+		UNIVERSAL = 0;
+		UNDO = 98;
+		REDO = 99;
+		DRAW = 10;
+		DRAW_END = 11;
+		REMOVE = 20;
+		MOVE = 30;
+		MOVING = 31;
+		MOVE_END = 32;
+		CLEAR = 40;
+	}
+}
+
+message CloseRsp{
+	int32 code = 2;
+}
+
+message SheetRsp{
+	repeated Board boards = 3;
+}
+
+message BoardcastResponse{
+	Category category = 1;
+	enum Category {
+		UNIVERSAL = 0;
+		ACTION = 1;
+		SHEET_PAGE = 2;
+		CURRENT_PAGE = 3;
+		ALL_PAGE = 4;
+	}
+
+	Action action = 2;
+	repeated Board boards = 3;
+	Board currentBoard = 4;
+}
+
+//*******************************************************************response******************************************
+//*******************************************************************ack******************************************
+
+message ACKMsg{
+	string msgId = 1;
+}
+//*******************************************************************ack******************************************
+//*******************************************************************geometry******************************************
+message Geometry{
+	string id = 1;
+    string penColor = 2;
+    int32 penDegree = 3;
+    Coordinates centroid = 4;
+    int64 createTime = 5;
+    Coordinates destination = 6;
+	Model model = 7;
+	int32 coverage = 8;
+
+	oneof geometry{
+		Rectangle rectangle =20;
+		Roundness roundness = 21;
+		Straight straight = 22;
+		Polyline polyline = 23;
+		TextBox textBox = 24;
+	}
+
+	enum Model{
+		UNIVERSAL = 0;
+		RECTANGLE = 1;
+		ROUNDNESS = 2;
+		STRAIGHT = 3;
+		POLYLINE = 4;
+		TEXTBOX = 5;
+	}
+}
+
+message Rectangle{
+	Coordinates start = 1;
+	Coordinates end = 2;
+}
+
+message Roundness{
+	Coordinates start = 1;
+	Coordinates end = 2;
+}
+
+message Straight{
+	Coordinates start = 1;
+	Coordinates end = 2;
+}
+
+message Polyline{
+	string path = 1;
+
+}
+
+message TextBox{
+	Coordinates start = 1;
+	string content = 2;
+	double fontsize = 3;
+}
+
+//坐标点
+message Coordinates{
+	double x = 1;
+	double y = 2;
+}
+//*******************************************************************geometry******************************************
+

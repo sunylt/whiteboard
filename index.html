@@ -11,45 +11,89 @@
 <!-- <script type="text/javascript" src="./lib/svg.draggable-3.js"></script>
 <script type="text/javascript" src="./lib/svg.draw.min.js"></script>
 <script type="text/javascript" src="./lib/svg.select.min.js"></script> -->
-<link rel="stylesheet" type="text/css" href="./css/index.css"> 
+<link rel="stylesheet" type="text/css" href="./css/index.less"> 
 <body>
 	<div class="main">
 		<div id="drawing">
 			<a class="left"><img src="./icon/back.png"></a>
 			<a class="right"><img src="./icon/back.png"></a>
+			<div id="drawsvg">
+				<embed class="svg_backgroud" width="100%" height="100%" src="" type="image/svg+xml">
+			</div>
 			<!-- <img src="./svg.png"> -->
 			<!-- <embed src="test.svg" type="image/svg+xml"> -->
 		</div>
 		<!-- <textarea class="test"></textarea> -->
 		<div class="oprate">
 				<!-- <input type="" name="" id="testChoose"> -->
-			<div>
-				<a style="width: 36px;height: 36px;line-height: 36px"><span id="currentPage"></span>/<span id="allPage"></span></a>
+			<div class="tool thumbnailOprate">
+				<div style="width: 26px;height: 26px;line-height: 26px"><span id="currentPage"></span>/<span id="allPage"></span></div>
 				<!-- <a ></a> -->
-				<!-- <a data-oprate="choose"  title="跳转页"><p style="font-weight: bold;">Go to</p></a> -->
-				<a data-oprate="add" title="增加页"><img src="./icon/add.png"></a>
-				<a data-oprate="del"  title="删除页"><img src="./icon/cut.png"></a>
+				<div data-oprate="reload" title="缩略图"><img src="./icon/page.png"></div>
+				<div data-oprate="add" title="增加页"><img src="./icon/add.png"></div>
+				<div data-oprate="del"  title="删除页"><img src="./icon/cut.png"></div>
 				<!-- <a data-oprate="reload" title="加载页"><img src="./icon/page.png"></a> -->
 			</div>
 			<!-- <a class="select" data-type="select">箭头</a> -->
-			<div>
-				<a data-type="pen"><img src="./icon/edit.png"></a>
-				<a class="rect" data-type="rect"><img src="./icon/cub.png"></a>
-				<a data-type="circle"><img src="./icon/circle.png"></a>
-				<a class="select" data-type="eraser"  title="橡皮擦"><img src="./icon/eraser.png"></a>
-				<a data-color="red"  title="颜色"><img src="./icon/color/black.png"></a>
-			</div>
-			<div>
-			<!-- <a data-color="black"><img src="./icon/cub.png"></a> -->
-				<a data-oprate="undo"  title="撤销"><img src="./icon/undo.png"></a>
-				<a data-oprate="redo"  title="恢复"><img src="./icon/redo.png"></a>
-				<a data-oprate="clear"  title="清屏"><img src="./icon/delete.png"></a>
+			<div class="toolCenter">
+				<div class="tool drawTools">
+					<div data-type="text">
+						<img src="./icon/text.png">
+						<img src="./icon/selected/text.png">
+					</div>
+					<div data-type="pen">
+						<img src="./icon/edit.png">
+						<img src="./icon/selected/edit.png">
+					</div>
+					<div class="rect" data-type="rect">
+						<img src="./icon/cub.png">
+						<img src="./icon/selected/cub.png">
+					</div>
+					<div data-type="circle">
+						<img src="./icon/circle.png">
+						<img src="./icon/selected/circle.png">
+					</div>
+					<div data-type="select">
+						<img src="./icon/target.png">
+						<img src="./icon/selected/target2.png">
+					</div>
+					<div data-type="eraser"  title="橡皮擦">
+						<img src="./icon/eraser.png">
+						<img src="./icon/selected/eraser.png">
+					</div>
+					<span></span>
+					<div data-color="red" class="colorContainer">
+						<img src="./icon/color/black.png"/>
+						<div>
+							<div class="colorName">
+									<a data-color="blue"><img src="./icon/color/blue.png"></a>
+									<a data-color="green"><img src="./icon/color/green.png"></a>
+									<a data-color="orange"><img src="./icon/color/orange.png"></a>
+									<a data-color="black"><img src="./icon/color/black.png"></a>
+									<a data-color="red"><img src="./icon/color/red.png"></a>
+									<a data-color="pink"><img src="./icon/color/pink.png"></a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tool">
+				<!-- <a data-color="black"><img src="./icon/cub.png"></a> -->
+					<div data-oprate="undo"  title="撤销"><img src="./icon/undo.png"></div>
+					<div data-oprate="redo"  title="恢复"><img src="./icon/redo.png"></div>
+					<div data-oprate="clear"  title="清屏"><img src="./icon/delete.png"></div>
+				</div>
 			</div>
 			<!-- <div><button id="files">上传</button></div> -->
-			<div class="content-a-upload">
+			<div class="content-a-upload tool">
 				<p style="margin: 0">
 					<span>上传文件</span>
 					<input type="file" id="chatVideo" accept="">
+				</p>
+			</div>
+			<div class="content-a-upload tool">
+				<p style="margin: 0">
+					<span>动态</span>
+					<input type="file" id="fileDoc" accept="">
 				</p>
 			</div>
 			<!-- <form id="form1" action="uploadFile.do" target="frame1" method="post" enctype="multipart/form-data">
@@ -57,16 +101,26 @@
 			    <input type="button" value="上传" id="upload">
 			</form> -->
 		</div>
+		<div class="thumbnailListContainer hide">
+			<div>
+				<div class="thumbnailList">
+					<!-- <div class="thumbnailItem" data-index="0">
+						<div class="drawBorder">1122222</div>
+						<p>1</p>
+					</div> -->
+					<!-- <div class="thumbnailItem" data-index="1">
+							<div class="drawBorder">33333444444</div>
+							<p>1</p>
+					</div>
+					<div class="thumbnailItem" data-index="2">
+							<div class="drawBorder">55556666</div>
+							<p>1</p>
+					</div> -->
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
-<!-- <script>
-	var s = Snap($("#drawing")[0]);
-	// var bigCircle = s.circle(150, 150, 100);
-	s.text(120, 120, "text")
-</script> -->
-<!-- <script type="text/javascript" src="./all.js"></script> -->
-<!-- <script type="text/javascript">
-</script> -->
 <script type="text/javascript" src="./index.js"></script>
 <!-- <script type="text/javascript">
 	// var headerUrlRest = "http://192.168.43.2:8031";
