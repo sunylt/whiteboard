@@ -19,6 +19,7 @@ var indexPage = 0;
 var userId = GetQueryString("userId");
 // var token = GetQueryString("token");
 var socketIOPath = GetQueryString("socketIOPath");
+var appkey = GetQueryString("appKey");
 headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
 console.log(headerUrlRest);
@@ -157,7 +158,42 @@ var initMainView = function() {
     }
 
     var _dispatcherEvent = function(data){   		//广播的事件
-        console.log(555,formEMFrame(data));
+		console.log(555,formEMFrame(data));
+		var page_change = function(formData){
+			indexPage = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") ? getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") : 0;
+			$("#currentPage").text(Number(indexPage) + 1);
+			var currentBoardBackground = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.background");
+			_onDrawBackgroud(currentBoardBackground);
+			var mapGeometry = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.mapGeometry");
+			$.each(mapGeometry, function(i,v){
+				_onDrawGeometry(v, {
+					op: 9
+				});
+			})
+		}
+		var sheet_chanage = function(formData){
+			var boards = getDatByPath(formData, "emResponse.boardcastResponse.boards");
+			$("#allPage").text(boards.length);
+			_unfoldSheets(boards);
+		}
+
+		var clear_and_end_draw = function(){
+			$(".textArea").remove();
+			if(currentObj && currentObj.node){
+				socket.emit("protobuf", makeActionReq({
+					bordIndex: Number(indexPage),
+					shapId: currentObj.attr("id"),
+					oprate: 11,            //绘制结束 draw_end
+					penColor: tool.stroke,
+					penDegree: tool.strokeWidth,
+					shap: currentObj.node ? currentObj.node.tagName : "text"
+				}), function(e){
+					_deleteCacheMsg(formEMFrame(e));
+					console.log("end ack function:", formEMFrame(e));
+				});
+				currentObj = null;
+			}
+		}
         var formData = formEMFrame(data);
         switch(getDatByPath(formData, "emResponse.boardcastResponse.category")){
             case 1:    //action 动作
@@ -165,38 +201,18 @@ var initMainView = function() {
                 var action = getDatByPath(formData, "emResponse.boardcastResponse.action");
                 _onDrawGeometry(geometry, action);
                 break;
-            case 2:   //SHEET_PAGE缩略图
-                var boards = getDatByPath(formData, "emResponse.boardcastResponse.boards");
-				$("#allPage").text(boards.length);
-				_unfoldSheets(boards);
+			case 2:   //SHEET_PAGE缩略图
+				clear_and_end_draw();
+				sheet_chanage(formData);
                 break;
-            case 3:   //CURRENT_PAGE当前页
-                // var mapGeometry = getDatByPath(data, "emResponse.boardcastResponse.currentBoard.mapGeometry");
-                indexPage = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") ? getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") : 0;
-                $("#currentPage").text(Number(indexPage) + 1);
-                var currentBoardBackground = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.background");
-                _onDrawBackgroud(currentBoardBackground);
-                var mapGeometry = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.mapGeometry");
-                $.each(mapGeometry, function(i,v){
-                    _onDrawGeometry(v, {
-                        op: 9
-                    });
-                })
-                break;
-            case 4:    //ALL_PAGE 当前页&&缩略图
-                indexPage = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") ? getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") : 0;
-                $("#currentPage").text(Number(indexPage) + 1);
-                var boards = getDatByPath(formData, "emResponse.boardcastResponse.boards");
-                $("#allPage").text(boards.length);
-				_unfoldSheets(boards);
-                var currentBoardBackground = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.background");
-                _onDrawBackgroud(currentBoardBackground);
-                var mapGeometry = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.mapGeometry");
-                $.each(mapGeometry, function(i,v){
-                    _onDrawGeometry(v, {
-                        op: 9
-                    });
-                })
+			case 3:   //CURRENT_PAGE当前页
+				clear_and_end_draw();
+				page_change(formData);
+                 break;
+			case 4:    //ALL_PAGE 当前页&&缩略图
+				clear_and_end_draw();
+				sheet_chanage(formData);
+				page_change(formData);
                 break;
         }
 	}
@@ -608,32 +624,34 @@ var initMainView = function() {
 					var content = e.target.value;
 					var id = $(this).parent().attr("id");
 					$(".textArea").remove();
-					currentObj = draw
-					.group()
-					.text(content)
-					.attr({
-						stroke: tool.stroke,
-						id: id,
-						fill: tool.stroke,
-						x:	x,
-						y: y
-					})
-					.font({
-						family:   'Helvetica',
-						 size:     13*viewBoxHeight/draw.attr("height")
-					});
-					socket.emit("protobuf", makeActionReq({
-						bordIndex: Number(indexPage),
-						shapId: currentObj.attr("id"),
-						oprate: 11,            //绘制结束 draw_end
-						penColor: tool.stroke,
-						penDegree: tool.strokeWidth,
-						shap: "text",
-					}), function(e){
-						_deleteCacheMsg(formEMFrame(e));
-						console.log("end ack function:", formEMFrame(e));
-					});
-					currentObj.on("mousedown", _moveElementEvent);
+					// if(content){
+						currentObj = draw
+						.group()
+						.text(content)
+						.attr({
+							stroke: tool.stroke,
+							id: id,
+							fill: tool.stroke,
+							x:	x,
+							y: y
+						})
+						.font({
+							family:   'Helvetica',
+							size:     13*viewBoxHeight/draw.attr("height")
+						});
+						socket.emit("protobuf", makeActionReq({
+							bordIndex: Number(indexPage),
+							shapId: currentObj.attr("id"),
+							oprate: 11,            //绘制结束 draw_end
+							penColor: tool.stroke,
+							penDegree: tool.strokeWidth,
+							shap: currentObj.node.tagName,
+						}), function(e){
+							_deleteCacheMsg(formEMFrame(e));
+							console.log("end ack function:", formEMFrame(e));
+						});
+						currentObj.on("mousedown", _moveElementEvent);
+					// }
 				})
                 break;
         }
@@ -890,51 +908,20 @@ var initMainView = function() {
 				penDegree: tool.strokeWidth,
 				shap: this.node.tagName,
 			}));
-			//test
 			currentObj = this;
-
-			//end
-			// this.on("mousemove", function(ev){
-			// 	var moveX = (ev.pageX - offsetLeft)*viewBoxWidth/draw.attr("width");
-			// 	var moveY = (ev.pageY - offsetTop)*viewBoxHeight/draw.attr("height");
-			// 	if(ev.touches && ev.touches[0]){
-			// 		moveX = (Number(ev.touches[0].pageX) - offsetLeft)*viewBoxWidth/draw.attr("width");
-			// 		moveY = (Number(ev.touches[0].pageY) - offsetTop)*viewBoxHeight/draw.attr("height");
-			// 	}
-			// 	var toX = initPostion.x + (moveX - x);
-			// 	var toY= initPostion.y + (moveY - y);
-			// 	var opt = {
-			// 		bordIndex: Number(indexPage),
-			// 		shapId: this.attr("id"),
-			// 		oprate: 31,
-			// 		penColor: tool.stroke,
-			// 		penDegree: tool.strokeWidth,
-			// 		shap: this.node.tagName,
-			// 		startX: toX,
-			// 		startY: toY
-			// 	}
-			// 	if(this.node.tagName == "path"){
-			// 		this.parent().move(toX, toY);
-			// 		opt.path = this.attr("d");
-			// 	}
-			// 	else{
-			// 		this.move(toX, toY);
-			// 		opt.endX = toX + (this.attr("width") ? this.attr("width") : 2*this.attr("rx"));
-			// 		opt.endY = toY + (this.attr("height") ? this.attr("height") : 2*this.attr("ry"));
-			// 	}
-			// 	socket.emit("protobuf", makeActionReq(opt));
-			// })
 		}
 	}
 
 
 	var _uploadFile = function(e, is, id){
 		var url = '';
+		var orgName = appkey.split("#")[0];
+		var appName = appkey.split("#")[1];
 		if(is){
-			url = headerUrlRest + "/222/111/whiteboards/upload/dynamic/" + userId;
+			url = headerUrlRest + "/"+ orgName +"/"+ appName +"/whiteboards/upload/dynamic/" + userId;
 		}
 		else{
-			var url = headerUrlRest + "/222/111/whiteboards/upload/" + userId;
+			url = headerUrlRest +  "/"+ orgName +"/"+ appName +"/whiteboards/upload/" + userId;
 		}
 		// var url = headerUrlRest + "/222/111/whiteboards/upload/" + userId;
 		var fileObj = document.getElementById(id);
