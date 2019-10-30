@@ -497,6 +497,7 @@ var initMainView = function() {
 					}
 					obj && obj
 					.text(geometry.textBox.content)
+					// .move(geometry.textBox.start.x, geometry.textBox.start.y);
 					.attr({                 //用move坐标会有误差
 						x: geometry.textBox.start.x,
 						y: geometry.textBox.start.y
@@ -518,10 +519,14 @@ var initMainView = function() {
 					})
 				}
 			});
-			obj && obj.on("mousedown", _moveElementEvent);
+			obj && obj.off("mousedown") && obj.on("mousedown", _moveElementEvent);
+			obj && obj.on("touchstart", _moveElementEvent);
 			obj && obj.on("mouseup", function(){
 				this.off("mousemove");
-			})
+			});
+			obj && obj.on("touchend", function(){
+				this.off("touchmove");
+			});
 		}
 		else if(action.op == 20){     //删除元素
 			obj.parent().remove();
@@ -650,7 +655,9 @@ var initMainView = function() {
 							_deleteCacheMsg(formEMFrame(e));
 							console.log("end ack function:", formEMFrame(e));
 						});
+						currentObj.off("mousedown");
 						currentObj.on("mousedown", _moveElementEvent);
+						currentObj.on("touchstart", _moveElementEvent);
 					// }
 				})
                 break;
@@ -824,6 +831,7 @@ var initMainView = function() {
 							x: toX,
 							y: toY
 						});
+						opt.content = currentObj.node.textContent;
 						opt.endX = toX + (currentObj.attr("width") ? currentObj.attr("width") : 2*currentObj.attr("rx"));
 						opt.endY = toY + (currentObj.attr("height") ? currentObj.attr("height") : 2*currentObj.attr("ry"));
 					}
@@ -865,9 +873,12 @@ var initMainView = function() {
 					})
 				}
 			});
+			currentObj.off("mousedown");
 			currentObj.on("mousedown", _moveElementEvent);
-			currentObj.on("mouseup", function(){
-				this.off("mousemove");
+			currentObj.off("touchstart");
+			currentObj.on("touchstart", _moveElementEvent);
+			currentObj.on("touchend", function(){
+				this.off("touchmove");
 			});
 			currentObj.node && socket.emit("protobuf", makeActionReq({
                 bordIndex: Number(indexPage),
