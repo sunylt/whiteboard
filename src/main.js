@@ -2,6 +2,8 @@
 import $ from 'jquery';
 import io from 'socket.io-client';
 import SVG from 'svg.js';
+import Hammer from 'hammerjs';
+import svgPanZoom from 'svg-pan-zoom';
 
 import {getDatByPath, GetQueryString, getUniqueId} from './utils';
 import formEMFrame from './handleResponse/formEMFrame';
@@ -32,6 +34,7 @@ var initMainView = function() {
 	var windowWidth = $(window).width()*scale;
 	var windowHeight = $(window).height()*scale;
 	var viewBoxVal = "0 0 2800 2100";
+	var viewBoxValues = viewBoxVal.split(" ");
 	var viewBoxWidth = viewBoxVal.split(" ")[2];
     var viewBoxHeight = viewBoxVal.split(" ")[3];
 	var tool = {};
@@ -44,6 +47,8 @@ var initMainView = function() {
 	var pathStr = "";
 	var initWidth;
 	var relativeInitWidh;
+	var svgWidth;
+	var svgHeight;
 	var socket;
 	var offsetLeft;
 	var offsetTop;
@@ -74,6 +79,8 @@ var initMainView = function() {
 			width:draw.attr("width"),
 			height: draw.attr("height"),
 		})
+		svgWidth = draw.attr("width");
+		svgHeight = draw.attr("height");
 		// $("#drawsvg").css({
 		// 	transform: "scale(" + windowWidth/initWith +")"
 		// })
@@ -93,8 +100,93 @@ var initMainView = function() {
 		offsetLeft = $("#drawSvg").offset().left;
 		offsetTop = $("#drawSvg").offset().top;
 	}
+
+	var _initZoomPan = function(){
+		var hammertime = new Hammer(document.querySelector('#drawSvg')); 
+		hammertime.get('pinch').set({ enable: true });
+		hammertime.get('rotate').set({ enable: true });
+		hammertime.on("pinchstart pinchin pinchout", function (ev) {
+			switch (ev.type) {
+				case "pinchin":
+					zoom(ev.scale);
+					break;
+				case "pinchout":
+					zoom(ev.scale);
+					break;
+				case "pinchstart":
+					viewBoxValues = draw.attr("viewBox").split(' ');
+					viewBoxWidth = viewBoxValues[2];
+					viewBoxHeight = viewBoxValues[3];
+					break;
+			}
+		});
+
+		function zoom(num) {
+			viewBoxValues[2] =viewBoxWidth /num;
+			viewBoxValues[3] =viewBoxHeight /num;
+			draw.attr("viewBox",viewBoxValues.join(" "));
+			draw.attr("width", svgWidth*num);
+			draw.attr("height", svgHeight*num);
+		}
+		// var eventsHandler = {
+		//   haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel']
+		// , init: function(options) {
+		// 	var instance = options.instance
+		// 	  , initialScale = 1
+		// 	  , pannedX = 0
+		// 	  , pannedY = 0
+		// 	// Init Hammer
+		// 	// Listen only for pointer and touch events
+		// 	this.hammer = Hammer(options.svgElement, {
+		// 	  inputClass: Hammer.SUPPORT_POINTER_EVENTS ? Hammer.PointerEventInput : Hammer.TouchInput
+		// 	})
+		// 	// Enable pinch
+		// 	this.hammer.get('pinch').set({enable: true})
+		// 	// Handle double tap
+		// 	this.hammer.on('doubletap', function(ev){
+		// 	  instance.zoomIn()
+		// 	})
+		// 	// Handle pan
+		// 	this.hammer.on('panstart panmove', function(ev){
+		// 	  // On pan start reset panned variables
+		// 	  if (ev.type === 'panstart') {
+		// 		pannedX = 0
+		// 		pannedY = 0
+		// 	  }
+		// 	  // Pan only the difference
+		// 	  instance.panBy({x: ev.deltaX - pannedX, y: ev.deltaY - pannedY})
+		// 	  pannedX = ev.deltaX
+		// 	  pannedY = ev.deltaY
+		// 	})
+		// 	// Handle pinch
+		// 	this.hammer.on('pinchstart pinchmove', function(ev){
+		// 	  // On pinch start remember initial zoom
+		// 	  if (ev.type === 'pinchstart') {
+		// 		initialScale = instance.getZoom()
+		// 		instance.zoom(initialScale * ev.scale)
+		// 	  }
+		// 	  instance.zoom(initialScale * ev.scale)
+		// 	})
+		// 	// Prevent moving the page on some devices when panning over SVG
+		// 	options.svgElement.addEventListener('touchmove', function(e){ e.preventDefault(); });
+		//   }
+		// , destroy: function(){
+		// 	this.hammer.destroy()
+		//   }
+		// }
+		// var element = document.querySelector('#drawSvg');
+		// svgPanZoom(element, {
+		//   zoomEnabled: true,
+		//   controlIconsEnabled: true,
+		//   dblClickZoomEnabled: false,
+		//   fit: 1,
+		//   center: 1, 
+		//   customEventsHandler: eventsHandler
+		// });
+	  }
 	
 	_resizeSvg();
+	_initZoomPan();
 
 	var initSocket = function(){
 		socket = io(headerUrlSock, {
@@ -216,6 +308,8 @@ var initMainView = function() {
                 break;
         }
 	}
+
+	
 
 	var _initView = function(isAdmin){
 	 	$(window).resize(function(){
@@ -388,7 +482,7 @@ var initMainView = function() {
 		})
 		.attr("src","");
 		SVG.get("imgBackgroud") && SVG.get("imgBackgroud").remove();
-		draw.clear();
+		// draw.clear();
 		if(url && url.indexOf("svg") > 0){
 			$(".svg_backgroud").attr("src", url);
 		}
