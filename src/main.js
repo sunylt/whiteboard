@@ -406,7 +406,7 @@ var initMainView = function() {
 			, 'stroke-width': geometry.penDegree
 			, id: geometry.id
 		}
-		if( action.op == 9 || action.op == 10 || action.op == 30 ){     //10绘制元素;30移动元素
+		if( action.op == 9 || action.op == 10 || action.op == 30 ||  action.op == 31){     //10绘制元素;30移动元素
 			switch(geometry.model){
 				case 1:
 					if(action.op == 9){
