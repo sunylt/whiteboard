@@ -405,7 +405,8 @@ var initMainView = function() {
                     console.log("redo ack function:", formEMFrame(e));
                 });
                 break;
-            case "reload":
+			case "reload":
+			
                 socket.emit("protobuf", makeSheetReq({
                     type: "RELOAD"
                 }), function(e){
