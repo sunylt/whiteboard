@@ -20,12 +20,10 @@
     "parcel-bundler": "^1.12.3"
   },
   "dependencies": {
-    "hammerjs": "^2.0.8",
     "jquery": "^3.4.1",
     "long": "^4.0.0",
     "protobufjs": "^6.8.8",
     "socket.io": "^2.2.0",
-    "svg-pan-zoom": "^3.6.1",
     "svg.js": "^2.7.1",
     "svg.select.js": "^3.0.1"
   }
