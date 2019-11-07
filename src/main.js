@@ -229,8 +229,7 @@ var initMainView = function() {
 	 	draw.on("touchstart", _mousedownEvtStart);
 		draw.on("touchend", _mousedownEvtEnd);
 	 	//工具条
-	 	$(".tool div").off("click");
-		$(".tool div").on("click", _onToolClick);
+		$(".tool div").off("click").on("click", _onToolClick);
 		$(".colorName a").on("click", _onColorClick);
 	    //上传文档
 		$("#chatVideo").on("change", function(e){
@@ -364,8 +363,7 @@ var initMainView = function() {
 			var className = indexPage == i ? '<div class="drawBorder selected">' : '<div class="drawBorder">';
             $(".thumbnailList").append($('<div class="thumbnailItem" data-index='+ i +'>' + className + '<img src='+ imgUrl +'></div><p>'+ (i+1) +'</p></div>'))
         });
-        $(".thumbnailItem").off("click");
-        $(".thumbnailItem").on("click", function(e){
+        $(".thumbnailItem").off("click").on("click", function(e){
 			e.stopPropagation();
 			var index = $(this).data('index');
 			$(".drawBorder").removeClass("selected");
@@ -505,8 +503,7 @@ var initMainView = function() {
 					break;
 			}
 			obj.data('coverageId', geometry.coverage);
-			obj && obj.off("click");
-			obj && obj.on("click", function(e){
+			obj && obj.off("click").on("click", function(e){
 				if(tool.shape == "eraser"){
 					socket.emit("protobuf", makeActionReq({
 							shapId: this.attr("id"),
@@ -519,14 +516,9 @@ var initMainView = function() {
 					})
 				}
 			});
-			obj && obj.off("mousedown") && obj.on("mousedown", _moveElementEvent);
-			obj && obj.on("touchstart", _moveElementEvent);
-			obj && obj.on("mouseup", function(){
-				this.off("mousemove");
-			});
-			obj && obj.on("touchend", function(){
-				this.off("touchmove");
-			});
+			obj && obj.off("mousedown").on("mousedown", _moveElementEvent);
+			obj && obj.off("touchstart").on("touchstart", _moveElementEvent);
+
 		}
 		else if(action.op == 20){     //删除元素
 			obj.parent().remove();
@@ -655,9 +647,8 @@ var initMainView = function() {
 							_deleteCacheMsg(formEMFrame(e));
 							console.log("end ack function:", formEMFrame(e));
 						});
-						currentObj.off("mousedown");
-						currentObj.on("mousedown", _moveElementEvent);
-						currentObj.on("touchstart", _moveElementEvent);
+						currentObj.off("mousedown").on("mousedown", _moveElementEvent);
+						currentObj.off("touchstart").on("touchstart", _moveElementEvent);
 					// }
 				})
                 break;
@@ -873,13 +864,8 @@ var initMainView = function() {
 					})
 				}
 			});
-			currentObj.off("mousedown");
-			currentObj.on("mousedown", _moveElementEvent);
-			currentObj.off("touchstart");
-			currentObj.on("touchstart", _moveElementEvent);
-			currentObj.on("touchend", function(){
-				this.off("touchmove");
-			});
+			currentObj.off("mousedown").on("mousedown", _moveElementEvent);
+			currentObj.off("touchstart").on("touchstart", _moveElementEvent);
 			currentObj.node && socket.emit("protobuf", makeActionReq({
                 bordIndex: Number(indexPage),
 				shapId: currentObj.attr("id"),
