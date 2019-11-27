@@ -52,7 +52,7 @@ var initMainView = function() {
 	var socket;
 	var offsetLeft;
 	var offsetTop;
-	var draw = SVG('drawsvg')
+	var draw = SVG('drawsvgContainer')
 	.attr({
 		viewBox: viewBoxVal,
 		id: "drawSvg",
@@ -79,9 +79,14 @@ var initMainView = function() {
 			width:draw.attr("width"),
 			height: draw.attr("height"),
 		})
+		$("#drawsvgContainer")
+		.css({
+			width:draw.attr("width"),
+			height: draw.attr("height"),
+		})
 		svgWidth = draw.attr("width");
 		svgHeight = draw.attr("height");
-		// $("#drawsvg").css({
+		// $("#drawsvgContainer").css({
 		// 	transform: "scale(" + windowWidth/initWith +")"
 		// })
 		// var newWidth = draw.attr("width");
@@ -104,29 +109,85 @@ var initMainView = function() {
 	var _initZoomPan = function(){
 		var hammertime = new Hammer(document.querySelector('#drawSvg')); 
 		hammertime.get('pinch').set({ enable: true });
-		hammertime.get('rotate').set({ enable: true });
-		hammertime.on("pinchstart pinchin pinchout", function (ev) {
-			switch (ev.type) {
-				case "pinchin":
-					zoom(ev.scale);
+		// hammertime.get('rotate').set({ enable: true });
+		hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+		var svgPositionInit = {};
+		var top;
+		var left;
+		hammertime.on("pinchstart pinchend pinchin pinchout panstart panmove panend", function (ev) {
+			if(tool.shape != "text" || tool.shape != "pen" || tool.shape != "rect" || tool.shape != "circle"){      //增加判断条件
+				switch (ev.type) {
+					case "pinchstart":
+						break;
+					case "pinchin":
+						zoom(ev.scale);
+						break;
+					case "pinchout":
+						zoom(ev.scale, true);
+						break;
+					case "pinchend":
+						viewBoxValues = draw.attr("viewBox").split(' ');
+						viewBoxWidth = viewBoxValues[2];
+						viewBoxHeight = viewBoxValues[3]; 
+						if(ev.additionalEvent == "pinchout"){
+							svgWidth = draw.attr("width");
+							svgHeight = draw.attr("height");
+						}
+						break;
+					case "panstart":
+						svgPositionInit.x = ev.center.x;
+						svgPositionInit.y = ev.center.y;
+						top = parseInt($("#drawSvg").css("top"));
+						left = parseInt($("#drawSvg").css("left"));
+						break;
+					case "panmove":
+						var newLeft = ev.center.x - svgPositionInit.x + left > 0 ? 0 : ev.center.x - svgPositionInit.x + left;
+						var newTop = ev.center.y - svgPositionInit.y + top > 0 ? 0 : ev.center.y - svgPositionInit.y + top;
+						if(Math.abs(newLeft) > svgWidth - $("#drawsvgContainer").css("width").split("px")[0]){
+							newLeft = -(svgWidth - $("#drawsvgContainer").css("width").split("px")[0]);
+						}
+						if(Math.abs(newTop) > svgHeight - $("#drawsvgContainer").css("height").split("px")[0]){
+							newTop = -(svgHeight - $("#drawsvgContainer").css("height").split("px")[0]);
+						}
+						$("#drawSvg")
+						.css({
+							left: newLeft,
+							top: newTop
+						})
+						offsetLeft = $("#drawSvg").offset().left;
+						offsetTop = $("#drawSvg").offset().top;
 					break;
-				case "pinchout":
-					zoom(ev.scale);
+					case "panend":
+					console.log(ev, "panend");
 					break;
-				case "pinchstart":
-					viewBoxValues = draw.attr("viewBox").split(' ');
-					viewBoxWidth = viewBoxValues[2];
-					viewBoxHeight = viewBoxValues[3];
-					break;
+				}
 			}
 		});
 
-		function zoom(num) {
+		function zoom(num,isOut) {
 			viewBoxValues[2] =viewBoxWidth /num;
 			viewBoxValues[3] =viewBoxHeight /num;
 			draw.attr("viewBox",viewBoxValues.join(" "));
-			draw.attr("width", svgWidth*num);
-			draw.attr("height", svgHeight*num);
+			if(isOut){
+				draw.attr("width", svgWidth*num);
+				draw.attr("height", svgHeight*num);
+			}
+			else if(draw.attr("width") > $("#drawsvgContainer").css("width").split("px")[0] && draw.attr("height") > $("#drawsvgContainer").css("height").split("px")[0]){
+				draw.attr("width", svgWidth*num);
+				draw.attr("height", svgHeight*num);
+			}
+			// viewBoxValues[2] =viewBoxWidth /num;
+			// viewBoxValues[3] =viewBoxHeight /num;
+			console.log(num, viewBoxWidth, viewBoxValues[2]);
+			console.log(num, svgWidth, svgWidth*num);
+			// draw.attr("viewBox",viewBoxValues.join(" "));
+			$("#drawSvg")
+			.css({
+				top: 0,
+				left: 0
+			})
+			offsetLeft = $("#drawSvg").offset().left;
+			offsetTop = $("#drawSvg").offset().top;
 		}
 		// var eventsHandler = {
 		//   haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel']
@@ -227,7 +288,7 @@ var initMainView = function() {
                     _onDrawGeometry(v, {
                         op: 9
                     });
-                })
+				})
                 socket.emit("protobuf", makeSheetReq({
                     type: "RELOAD"
                 }), function(e){
@@ -294,15 +355,15 @@ var initMainView = function() {
                 _onDrawGeometry(geometry, action);
                 break;
 			case 2:   //SHEET_PAGE缩略图
-				clear_and_end_draw();
+				clear_and_end_draw();     //特殊处理文本
 				sheet_chanage(formData);
                 break;
 			case 3:   //CURRENT_PAGE当前页
-				clear_and_end_draw();
+				clear_and_end_draw();        //特殊处理文本
 				page_change(formData);
                  break;
 			case 4:    //ALL_PAGE 当前页&&缩略图
-				clear_and_end_draw();
+				clear_and_end_draw();     //特殊处理文本
 				sheet_chanage(formData);
 				page_change(formData);
                 break;
@@ -319,7 +380,7 @@ var initMainView = function() {
         draw.on("click", _drawClick);
 		draw.on("mousedown", _mousedownEvtStart);
 		draw.on("mouseup", _mousedownEvtEnd);
-		$("#drawsvg").on("mouseleave", _mousedownEvtEnd);
+		$("#drawsvgContainer").on("mouseleave", _mousedownEvtEnd);
 	 	draw.on("touchstart", _mousedownEvtStart);
 		draw.on("touchend", _mousedownEvtEnd);
 	 	//工具条
@@ -481,13 +542,13 @@ var initMainView = function() {
 		})
 		.attr("src","");
 		SVG.get("imgBackgroud") && SVG.get("imgBackgroud").remove();
-		// draw.clear();
+		draw.clear();
 		if(url && url.indexOf("svg") > 0){
 			$(".svg_backgroud").attr("src", url);
 		}
 		else if(url){
 			draw.
-			image(url, "100%", "100%")
+			image(url, "100%")
 			.attr("id","imgBackgroud")
 			.back();
 		}
@@ -542,7 +603,7 @@ var initMainView = function() {
 
 					// if(!$("#" + geometry.id).length){
 					// 	obj = $('<div class="textArea"><input /></div>');
-					// 	$("#drawsvg").append(obj);
+					// 	$("#drawsvgContainer").append(obj);
 					// }
 					// else{
 					// 	obj = $("#" + geometry.id);
@@ -648,7 +709,7 @@ var initMainView = function() {
 				currentObj
 				.css(cssJson)
 				.attr("id", getUniqueId());
-                $("#drawsvg").append(currentObj);
+                $("#drawsvgContainer").append(currentObj);
 				currentObj.children("textarea").focus();
 				socket.emit("protobuf", makeActionReq({
 					bordIndex: Number(indexPage),
