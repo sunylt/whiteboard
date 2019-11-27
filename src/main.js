@@ -52,6 +52,7 @@ var initMainView = function() {
 	var socket;
 	var offsetLeft;
 	var offsetTop;
+	var isEraser = false;
 	var draw = SVG('drawsvgContainer')
 	.attr({
 		viewBox: viewBoxVal,
@@ -875,6 +876,10 @@ var initMainView = function() {
 						shap: "path",
 						path:'M'+ parseInt(x) +' ' + parseInt(y)
 					}))
+					break;
+				case "eraser":
+					isEraser = true;
+					return;
 			}
 			draw.on("mousemove", _mousedownEvtMove);
 			draw.on("touchmove", _mousedownEvtMove);
@@ -988,6 +993,7 @@ var initMainView = function() {
 						opt.endY = toY + (currentObj.attr("height") ? currentObj.attr("height") : 2*currentObj.attr("ry"));
 					}
 					socket.emit("protobuf", makeActionReq(opt));
+					break;
 			}
 		}
 	}
@@ -1007,18 +1013,18 @@ var initMainView = function() {
 				}));
 				pathStr = "";
 			}
-			currentObj.on("click", function(self){
-				if(tool.shape == "eraser"){
-					socket.emit("protobuf", makeActionReq({
-                            bordIndex: Number(indexPage),
-							shapId: this.attr("id"),
-							oprate: 20,      //删除  remove
-							shap: this.node.tagName
-						}), function(e){
-						_deleteCacheMsg(formEMFrame(e));
-						console.log("delete ack function:", formEMFrame(e));
-					})
-				}
+			// currentObj.off("mouseout");
+			currentObj.off("mouseover").on("mouseover", function(){   //mouseout有时不触发
+				__deleteElement(this);
+			});
+			//touchmove不能实现****
+			currentObj.on("touchmove", function(e){    //***** */移动端事件不好处理
+				e.preventDefault();
+			});
+			// currentObj.off("click");
+			currentObj.off("click").on("click", function(){   //***** */是否可以移动到_moveElementEvent里
+				console.log(23333333);
+				__deleteElement(this,true);
 			});
 			currentObj.off("mousedown").on("mousedown", _moveElementEvent);
 			currentObj.off("touchstart").on("touchstart", _moveElementEvent);
@@ -1035,6 +1041,21 @@ var initMainView = function() {
 			})
 			draw.off("mousemove");
 			currentObj = null;
+		}
+		isEraser = false;
+	}
+
+	var __deleteElement = function(self,isClick){
+		if(tool.shape == "eraser" && (isEraser || isClick)){
+			socket.emit("protobuf", makeActionReq({
+					bordIndex: Number(indexPage),
+					shapId: self.attr("id"),
+					oprate: 20,      //删除  remove
+					shap: self.node.tagName
+				}), function(e){
+				_deleteCacheMsg(formEMFrame(e));
+				console.log("delete ack function:", formEMFrame(e));
+			})
 		}
 	}
 	
@@ -1063,6 +1084,17 @@ var initMainView = function() {
 			}));
 			currentObj = this;
 		}
+		// else if(tool.shape == "eraser" && (isEraser || isClick)){
+		// 	socket.emit("protobuf", makeActionReq({
+		// 			bordIndex: Number(indexPage),
+		// 			shapId: self.attr("id"),
+		// 			oprate: 20,      //删除  remove
+		// 			shap: self.node.tagName
+		// 		}), function(e){
+		// 		_deleteCacheMsg(formEMFrame(e));
+		// 		console.log("delete ack function:", formEMFrame(e));
+		// 	})
+		// }
 	}
 
 
