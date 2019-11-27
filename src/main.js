@@ -1023,7 +1023,6 @@ var initMainView = function() {
 			});
 			// currentObj.off("click");
 			currentObj.off("click").on("click", function(){   //***** */是否可以移动到_moveElementEvent里
-				console.log(23333333);
 				__deleteElement(this,true);
 			});
 			currentObj.off("mousedown").on("mousedown", _moveElementEvent);
