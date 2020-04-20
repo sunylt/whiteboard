@@ -43,9 +43,19 @@ var getUniqueId = function (id) { //*******
     var hexd = offset + autoIncrement;
     return id ? id + hexd.toString() : hexd.toString();
 };
+
+function getParams (name){
+	var paramsArr = window.location.href.split('?')[1].split('&');
+	for (var i = 0; i < paramsArr.length; i++) {
+		if (paramsArr[i].indexOf(name) != -1) {
+			return paramsArr[i].split('=')[1]
+		}
+	}
+}
 // export {getUniqueId};
 export{
     getDatByPath,
     GetQueryString,
-    getUniqueId
+    getUniqueId,
+    getParams
 }

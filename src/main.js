@@ -5,7 +5,7 @@ import SVG from 'svg.js';
 import Hammer from 'hammerjs';
 import svgPanZoom from 'svg-pan-zoom';
 
-import {getDatByPath, GetQueryString, getUniqueId} from './utils';
+import {getDatByPath, GetQueryString, getUniqueId, getParams} from './utils';
 import formEMFrame from './handleResponse/formEMFrame';
 import makeEnterReq from './handleRequst/makeEnterReq';
 import makeSheetReq from './handleRequst/makeSheetReq';
@@ -21,11 +21,11 @@ var indexPage = 0;
 var userId = GetQueryString("userId");
 // var token = GetQueryString("token");
 var socketIOPath = GetQueryString("socketIOPath");
-var appkey = GetQueryString("appKey");
+var appkey = getParams("appKey");
 headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
 console.log(headerUrlRest);
-
+var isCreater = getParams("isCreater");
 
 // var draw = SVG('drawing').size(300, 300)
 // var rect = draw.rect(100, 100).attr({ fill: '#f06' })
@@ -279,7 +279,9 @@ var initMainView = function() {
                 console.log("进入白板成功！！！！！！！！！！！");
                 var masterId = getDatByPath(data, "emResponse.enterRsp.confr.masterId");
 
-                _initView(masterId == userId);
+                //_initView(masterId == userId);
+                _initView(isCreater);
+
                 indexPage = getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.index") ? getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.index") : 0;
                 $("#currentPage").text(Number(indexPage) + 1);
                 var currentBoardBackground = getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.background");
