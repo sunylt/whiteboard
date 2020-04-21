@@ -25,7 +25,7 @@ var appkey = getParams("appKey");
 headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
 console.log(headerUrlRest);
-var isCreater = getParams("isCreater");
+var isCreater = getParams("isCreater") == 'true'? true: false;
 
 // var draw = SVG('drawing').size(300, 300)
 // var rect = draw.rect(100, 100).attr({ fill: '#f06' })
