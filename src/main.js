@@ -314,7 +314,7 @@ var initMainView = function() {
     }
 
     var _dispatcherEvent = function(data){   		//广播的事件
-		console.log(555,formEMFrame(data));
+		console.log('draw',formEMFrame(data));
 		var page_change = function(formData){
 			indexPage = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") ? getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") : 0;
 			$("#currentPage").text(Number(indexPage) + 1);
