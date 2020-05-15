@@ -574,7 +574,7 @@ var initMainView = function() {
 					}
 					obj && obj
 					.move(Math.min(geometry.rectangle.start.x, geometry.rectangle.end.x), Math.min(geometry.rectangle.start.y, geometry.rectangle.end.y))
-					.size(Math.abs(geometry.rectangle.start.x - geometry.rectangle.end.x),  Math.abs(geometry.rectangle.start.y - geometry.rectangle.end.y))
+					.size(Math.max(Math.abs(geometry.rectangle.start.x - geometry.rectangle.end.x),0.1),  Math.max(Math.abs(geometry.rectangle.start.y - geometry.rectangle.end.y),0.1))
 					break;
 				case 2:
 					if(action.op == 9){
@@ -584,7 +584,7 @@ var initMainView = function() {
 					//同样参数move 2次，是因为svg 里ellipse 的move方法bug，只移动一次move作用的是cx\cy，而不是x\y
 					obj && obj
 					.move(Math.min(geometry.roundness.start.x, geometry.roundness.end.x), Math.min(geometry.roundness.start.y, geometry.roundness.end.y))
-					.size(Math.abs(geometry.roundness.start.x - geometry.roundness.end.x),  Math.abs(geometry.roundness.start.y - geometry.roundness.end.y))
+					.size(Math.max(Math.abs(geometry.roundness.start.x - geometry.roundness.end.x),0.1),  Math.max(Math.abs(geometry.roundness.start.y - geometry.roundness.end.y),0.1))
 					.move(Math.min(geometry.roundness.start.x, geometry.roundness.end.x), Math.min(geometry.roundness.start.y, geometry.roundness.end.y))
 					break;
 				case 3:
@@ -904,7 +904,7 @@ var initMainView = function() {
 				case "rect":
 					currentObj
 					.move(Math.min(currentObjData.initX, x), Math.min(currentObjData.initY, y))
-					.size(Math.abs(currentObjData.initX - x),  Math.abs(currentObjData.initY - y))
+					.size(Math.max(Math.abs(currentObjData.initX - x),0.1),  Math.max(Math.abs(currentObjData.initY - y),0.1))
 					socket.emit("protobuf", makeActionReq({
                         bordIndex: Number(indexPage),
 						shapId: currentObj.attr("id"),
@@ -921,7 +921,7 @@ var initMainView = function() {
 				case "circle":
 					currentObj
 					.move(Math.min(currentObjData.initX, x), Math.min(currentObjData.initY, y))
-					.size(Math.abs(currentObjData.initX - x),  Math.abs(currentObjData.initY - y));
+					.size(Math.max(Math.abs(currentObjData.initX - x),0.1),  Math.max(Math.abs(currentObjData.initY - y),0.1));
 
 					socket.emit("protobuf", makeActionReq({
                         bordIndex: Number(indexPage),
