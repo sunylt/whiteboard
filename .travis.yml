@@ -1,6 +1,11 @@
 
 dist: trusty
 language: node_js
+node_js:
+   - "8"
+env:
+  global:
+    - "nexus_auth=ci-deploy:Xyc-R5c-SdS-2Qr"
 install:
   - npm install
 jobs:
@@ -16,7 +21,3 @@ jobs:
         script: ./travis/upload.sh
         on:
           tags: true
-
-cache:
-  directories:
-    - node_moduels
