@@ -1112,10 +1112,12 @@ var initMainView = function() {
 		// var url = headerUrlRest + "/222/111/whiteboards/upload/" + userId;
 		var fileObj = document.getElementById(id);
 		var file = fileObj.files[0];
-
+		if(!file){
+			return false;
+		}
 		var form = new FormData(); // FormData 对象
 		form.append("file", file); // 文件对象
-		$(this).val("");
+		fileObj.value = "";
 
 		var xhr = new XMLHttpRequest();  // XMLHttpRequest 对象
 		xhr.open("post", url); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
