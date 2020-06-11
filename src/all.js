@@ -90,6 +90,10 @@ var getAll = function(){
               "token": {
                 "type": "string",
                 "id": 4
+              },
+              "userName": {
+                "type": "string",
+                "id": 5
               }
             }
           },
@@ -195,6 +199,10 @@ var getAll = function(){
               "confr": {
                 "type": "Confr",
                 "id": 2
+              },
+              "level": {
+                "type": "int32",
+                "id": 3
               }
             }
           },
@@ -311,6 +319,10 @@ var getAll = function(){
               "currentBoard": {
                 "type": "Board",
                 "id": 4
+              },
+              "level": {
+                "type": "int32",
+                "id": 5
               }
             },
             "nested": {
@@ -320,7 +332,8 @@ var getAll = function(){
                   "ACTION": 1,
                   "SHEET_PAGE": 2,
                   "CURRENT_PAGE": 3,
-                  "ALL_PAGE": 4
+                  "ALL_PAGE": 4,
+                  "FRAME": 5
                 }
               }
             }

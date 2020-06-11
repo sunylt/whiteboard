@@ -26,6 +26,7 @@ headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
 console.log(headerUrlRest);
 var isCreater = getParams("isCreater") == 'true'? true: false;
+// var isCreater = true;
 
 // var draw = SVG('drawing').size(300, 300)
 // var rect = draw.rect(100, 100).attr({ fill: '#f06' })
@@ -277,10 +278,11 @@ var initMainView = function() {
         switch(getDatByPath(data, "emResponse.proType")){
             case 10:       //确定enter成功
                 console.log("进入白板成功！！！！！！！！！！！");
-                var masterId = getDatByPath(data, "emResponse.enterRsp.confr.masterId");
+				var masterId = getDatByPath(data, "emResponse.enterRsp.confr.masterId");
+				var level = getDatByPath(data, "emResponse.enterRsp.level");
 
                 //_initView(masterId == userId);
-                _initView(isCreater);
+                _initView(isCreater,level);
 
                 indexPage = getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.index") ? getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.index") : 0;
                 $("#currentPage").text(Number(indexPage) + 1);
@@ -350,32 +352,54 @@ var initMainView = function() {
 				currentObj = null;
 			}
 		}
-        var formData = formEMFrame(data);
-        switch(getDatByPath(formData, "emResponse.boardcastResponse.category")){
-            case 1:    //action 动作
-                var geometry = getDatByPath(formData, "emResponse.boardcastResponse.action.geometry");
-                var action = getDatByPath(formData, "emResponse.boardcastResponse.action");
-                _onDrawGeometry(geometry, action);
-                break;
-			case 2:   //SHEET_PAGE缩略图
-				clear_and_end_draw();     //特殊处理文本
-				sheet_chanage(formData);
-                break;
-			case 3:   //CURRENT_PAGE当前页
-				clear_and_end_draw();        //特殊处理文本
-				page_change(formData);
-                 break;
-			case 4:    //ALL_PAGE 当前页&&缩略图
-				clear_and_end_draw();     //特殊处理文本
-				sheet_chanage(formData);
-				page_change(formData);
-                break;
-        }
+		var oprateAuth = function(el){
+			if(el > 3){
+				$(".member .tool").css({"display":"flex"})
+			}
+			else{
+				$(".member .tool").css({"display":"none"})
+			}
+		}
+		var formData = formEMFrame(data);
+		if(getDatByPath(formData, "emResponse.closeRsp.code") === 102){//白板被删除
+			$(".messageItem").css({display:"inline-block"});
+			setTimeout(function(){
+				$(".messageItem").css({display:"none"});
+				window.opener=null;
+				window.open('','_self');
+				window.close();
+			}, 3000)
+		}
+		else{
+			switch(getDatByPath(formData, "emResponse.boardcastResponse.category")){
+				case 1:    //action 动作
+					var geometry = getDatByPath(formData, "emResponse.boardcastResponse.action.geometry");
+					var action = getDatByPath(formData, "emResponse.boardcastResponse.action");
+					_onDrawGeometry(geometry, action);
+					break;
+				case 2:   //SHEET_PAGE缩略图
+					clear_and_end_draw();     //特殊处理文本
+					sheet_chanage(formData);
+					break;
+				case 3:   //CURRENT_PAGE当前页
+					clear_and_end_draw();        //特殊处理文本
+					page_change(formData);
+					break;
+				case 4:    //ALL_PAGE 当前页&&缩略图
+					clear_and_end_draw();     //特殊处理文本
+					sheet_chanage(formData);
+					page_change(formData);
+					break;
+				case 5:
+					var level =  getDatByPath(formData, "emResponse.boardcastResponse.level");
+					oprateAuth(level);
+			}
+		}
 	}
 
 	
 
-	var _initView = function(isAdmin){
+	var _initView = function(isAdmin, el){
 	 	$(window).resize(function(){
 		    _resizeSvg();
 		});
@@ -399,19 +423,14 @@ var initMainView = function() {
 	    $(".left").on("click", _changPage);
         $(".right").on("click", _changPage);
         if(isAdmin){
-            // $(".thumbnailOprate").css("visibility","visible");
-            // $(".content-a-upload").css("visibility","visible");
-            $(".tool").css("visibility","visible");
-            $(".right").css("visibility","visible");
-            $(".left").css("visibility","visible");
+            $(".tool").css("display","flex");
         }
-        else{
-            $(".toolCenter >.tool").css("visibility","visible");
-            // $(".thumbnailOprate").css("visibility","hidden");
-            // $(".content-a-upload").css("visibility","hidden");
-            // $(".right").css("visibility","hidden");
-            // $(".left").css("visibility","hidden");
-        }
+        else if(el > 3){
+            $(".member  .tool").css("display","flex");
+		}
+		else{
+			$(".member  .tool").css("display","none");
+		}
 	}
 
 	var _onWindowClick = function(e){
@@ -422,6 +441,9 @@ var initMainView = function() {
 	}
 
 	var _onToolClick = function(e){
+		if(e.target.id == "chatVideo"){
+			return
+		}
         e.stopPropagation();
         // $(".thumbnailListContainer").removeClass("show").addClass("hide");
 		if($(e.target).parent().data("color") || !$(e.target).parent().data("type")){

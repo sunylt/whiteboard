@@ -20,8 +20,8 @@ var whiteboards = {
 <body>
 	<div class="main">
 		<div id="drawing">
-			<a class="left"><img src="./icon/back.png"></a>
-			<a class="right"><img src="./icon/back.png"></a>
+			<!-- <a class="left"><img src="./icon/back.png"></a>
+			<a class="right"><img src="./icon/back.png"></a> -->
 			<div id="drawsvgContainer">
 				<embed class="svg_backgroud" width="100%" height="100%" src="" type="image/svg+xml">
 			</div>
@@ -31,16 +31,23 @@ var whiteboards = {
 		<!-- <textarea class="test"></textarea> -->
 		<div class="oprate">
 				<!-- <input type="" name="" id="testChoose"> -->
-			<div class="tool thumbnailOprate">
+			<div class="tool thumbnailOprate admin">
+				<a class="left"><img src="./icon/back.png"></a>
 				<div style="width: 26px;height: 26px;line-height: 26px"><span id="currentPage"></span>/<span id="allPage"></span></div>
+				<a class="right"><img src="./icon/back.png"></a>
 				<!-- <a ></a> -->
 				<div data-oprate="reload" title="缩略图"><img src="./icon/page.png"></div>
 				<div data-oprate="add" title="增加页"><img src="./icon/add.png"></div>
 				<div data-oprate="del"  title="删除页"><img src="./icon/cut.png"></div>
-				<!-- <a data-oprate="reload" title="加载页"><img src="./icon/page.png"></a> -->
+				<div class="content-a-upload tool admin" data-oprate="upload">
+					<p style="margin: 0">
+						<span><img src="./icon/upload.png"></span>
+						<input type="file" id="chatVideo" accept="">
+					</p>
+				</div>
 			</div>
 			<!-- <a class="select" data-type="select">箭头</a> -->
-			<div class="toolCenter">
+			<div class="toolCenter member">
 				<div class="tool drawTools">
 					<div data-type="text">
 						<img src="./icon/text.png">
@@ -89,12 +96,12 @@ var whiteboards = {
 				</div>
 			</div>
 			<!-- <div><button id="files">上传</button></div> -->
-			<div class="content-a-upload tool">
+			<!-- <div class="content-a-upload tool admin">
 				<p style="margin: 0">
-					<span>上传文件</span>
+					<span><img src="./icon/upload.png"></span>
 					<input type="file" id="chatVideo" accept="">
 				</p>
-			</div>
+			</div> -->
 			<!-- <div class="content-a-upload tool">
 				<p style="margin: 0">
 					<span>动态</span>

@@ -40,7 +40,6 @@ message EMRequest{
 message EnterReq{
 	string roomId = 3;
 	string token = 4;
-	string userName = 5;
 }
 
 message ActionReq{

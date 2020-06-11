@@ -131,19 +131,19 @@ body{
 	cursor: pointer;
 }
 .left{
-	left: 10px;
-	top: 50%;
-	visibility:hidden;
+	// left: 10px;
+	// top: 50%;
+	// visibility:hidden;
 }
 .right{
-	right: 10px;
-	top: 50%;
+	// right: 10px;
+	// top: 50%;
 	transform:rotate(180deg);
 	-ms-transform:rotate(180deg); 	/* IE 9 */
 	-moz-transform:rotate(180deg); 	/* Firefox */
 	-webkit-transform:rotate(180deg); /* Safari 和 Chrome */
 	-o-transform:rotate(180deg);
-	visibility:hidden;
+	// visibility:hidden;
 }
 svg{
 	background:transparent;
@@ -167,11 +167,11 @@ svg{
 	width: 100%;
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: space-between;
+	justify-content: center;
 	>div:nth-child(1){
 		margin-left: 18px;
 	}
-	.toolCenter{
+	.member{
 		display: flex;
 		flex-wrap: wrap;
 	}
@@ -180,8 +180,8 @@ svg{
 		background: #fff;
 		height: 38px;
 		// overflow: hidden;
-		visibility:hidden;
-		display: flex;
+		// visibility:hidden;
+		display: none;
 		line-height: 38px;
 		border-radius: 8px;
 		position: relative;
@@ -210,7 +210,7 @@ svg{
 				margin-top: 11px;
 			}
 		}
-		&.content-a-upload{
+		.content-a-upload{
 			padding: 0 3px;
 			background: #fff;
 			height: 38px;
@@ -242,6 +242,15 @@ svg{
 			margin: 6px 8px;
 			background: #fff;
 			text-align: center;
+			input {
+				position: absolute;
+				/*font-size: 100px;*/
+				height: 77px;
+				left: 0;
+				top: 0;
+				opacity: 0;
+				cursor: pointer;
+			}
 			>img{
 				height: 27px;
 				width: 27px;
