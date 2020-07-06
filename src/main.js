@@ -445,7 +445,7 @@ var initMainView = function() {
 			return
 		}
         e.stopPropagation();
-        // $(".thumbnailListContainer").removeClass("show").addClass("hide");
+        $(".thumbnailListContainer").removeClass("show").addClass("hide");
 		if($(e.target).parent().data("color") || !$(e.target).parent().data("type")){
 			if($(".colorContainer").hasClass("selected")){
 				$(".colorContainer").removeClass("selected")
@@ -497,7 +497,6 @@ var initMainView = function() {
                     type: "RELOAD"
                 }), function(e){
 					_deleteCacheMsg(formEMFrame(e));
-					console.log($(".thumbnailListContainer").hasClass("hide"),999);
 					if($(".thumbnailListContainer").hasClass("hide")){
 						$(".thumbnailListContainer").removeClass("hide").addClass("show");
 					}
