@@ -911,7 +911,7 @@ var initMainView = function() {
 
 	var _mousedownEvtMove = function(e){
 		e.stopPropagation();
-		console.log('move');
+		// console.log('move');
 		var x = (e.pageX - offsetLeft)*viewBoxWidth/draw.attr("width");
 		var y = (e.pageY - offsetTop)*viewBoxHeight/draw.attr("height");
 		if(e.touches && e.touches[0]){
@@ -941,8 +941,8 @@ var initMainView = function() {
 					break;
 				case "circle":
 					currentObj
+					.size(Math.max(Math.abs(currentObjData.initX - x),0.1),  Math.max(Math.abs(currentObjData.initY - y),0.1))
 					.move(Math.min(currentObjData.initX, x), Math.min(currentObjData.initY, y))
-					.size(Math.max(Math.abs(currentObjData.initX - x),0.1),  Math.max(Math.abs(currentObjData.initY - y),0.1));
 
 					socket.emit("protobuf", makeActionReq({
                         bordIndex: Number(indexPage),
