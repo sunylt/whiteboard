@@ -723,7 +723,7 @@ var initMainView = function() {
 		var htmlY = (e.pageY - offsetTop);
         switch(tool.shape){
             case "text":
-				currentObj = $('<div class="textArea"><textarea></textarea></div>');
+				currentObj = $('<div class="textArea"><textarea style="-webkit-user-select:text !important"></textarea></div>');
                 var cssJson = {
 					"border-color": tool.stroke,
 					color: tool.stroke,
@@ -909,6 +909,38 @@ var initMainView = function() {
 		}
 	}
 
+	function throttle(delay, fn, me){
+		var isVaile = true;
+		var isLast = false;
+		var timer;
+		return function(){
+			isLast = true;
+			var args = arguments;
+			var fn = fn || arguments[0]
+			console.log(11111,isVaile);
+			if(isVaile){
+				console.log(2222,delay);
+				fn.apply(me, args);
+				isVaile = false;
+				isLast = false;
+				console.log(555555,isVaile);
+				setTimeout(function(){
+					console.log(444,delay);
+					isVaile = true;
+				},delay)
+			}
+			if(isLast){
+				console.log(333333);
+				clearTimeout(timer);
+				timer = setTimeout(function(){
+					fn.apply(me, args);
+				}, 2*delay)
+			}
+		}
+	}
+
+	// var test = throttle(100);
+
 	var _mousedownEvtMove = function(e){
 		e.stopPropagation();
 		// console.log('move');
@@ -962,6 +994,19 @@ var initMainView = function() {
 					var pathNew = pathOld + "L" + parseInt(x)+ " " + parseInt(y);
 					currentObj && currentObj.plot(pathNew);
 					pathStr += "L" + parseInt(x)+ " " + parseInt(y);
+					// var send = function(){
+					// 	pathStr && currentObj && socket.emit("protobuf", makeActionReq({
+					// 		bordIndex: Number(indexPage),
+					// 		shapId: currentObj.attr("id"),
+					// 		oprate: 10,
+					// 		penColor: tool.stroke,
+					// 		penDegree: tool.strokeWidth,
+					// 		shap: "path",
+					// 		incrementPath: pathStr
+					// 	}));
+					// 	pathStr = "";
+					// }
+					// test(send,e);
 					setInterval(function(){
 						pathStr && currentObj && socket.emit("protobuf", makeActionReq({
 							bordIndex: Number(indexPage),
