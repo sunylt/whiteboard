@@ -11,6 +11,7 @@ import makeEnterReq from './handleRequst/makeEnterReq';
 import makeSheetReq from './handleRequst/makeSheetReq';
 import makeActionReq from './handleRequst/makeActionReq';
 import messageCache from './messageCache';
+import imgUrl from '../icon/page.png'
 
 var headerUrlRest = (window.location.protocol === 'https:' ? 'https:' : 'http:') + "//rtc-turn4-hsb.easemob.com";
 var headerUrlSock = (window.location.protocol === 'https:' ? 'https:' : 'http:') + "//rtc-turn4-hsb.easemob.com";
@@ -255,7 +256,8 @@ var initMainView = function() {
 		socket = io(headerUrlSock, {
 			path: socketIOPath
 		});
-		socket.on('connect', function(){
+		socket.on('connect', function(res){
+			console.log("socket connect success----",res);
 			setTimeout(function(){
 				socket.emit("protobuf", makeEnterReq({}),function(e){
 					_deleteCacheMsg(formEMFrame(e));
@@ -265,19 +267,19 @@ var initMainView = function() {
 			socket.on("protobuf", _responseEvent);
 			socket.on("binaryResponse", _dispatcherEvent);
 			socket.on("disconnect", function(res){
-				console.log(res, 888);
+				console.log("socket断开----",res);
 			})
 		});
     }
     
     initSocket();
 
-    var _responseEvent = function(res){          //respone的事件
-        console.log("respone的事件",formEMFrame(res));
+    var _responseEvent = function(res){          //responce的事件
+        console.log("response的事件---",formEMFrame(res));
         var data = formEMFrame(res);
         switch(getDatByPath(data, "emResponse.proType")){
             case 10:       //确定enter成功
-                console.log("进入白板成功！！！！！！！！！！！");
+                console.log("serverce enter responce");
 				var masterId = getDatByPath(data, "emResponse.enterRsp.confr.masterId");
 				var level = getDatByPath(data, "emResponse.enterRsp.level");
 
@@ -316,7 +318,7 @@ var initMainView = function() {
     }
 
     var _dispatcherEvent = function(data){   		//广播的事件
-		console.log('draw',formEMFrame(data));
+		console.log('广播事件---',formEMFrame(data));
 		var page_change = function(formData){
 			indexPage = getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") ? getDatByPath(formData, "emResponse.boardcastResponse.currentBoard.index") : 0;
 			$("#currentPage").text(Number(indexPage) + 1);
@@ -362,13 +364,15 @@ var initMainView = function() {
 		}
 		var formData = formEMFrame(data);
 		if(getDatByPath(formData, "emResponse.closeRsp.code") === 102){//白板被删除
-			$(".messageItem").css({display:"inline-block"});
-			setTimeout(function(){
-				$(".messageItem").css({display:"none"});
-				window.opener=null;
-				window.open('','_self');
-				window.close();
-			}, 3000)
+			console.log("删除白板---");
+			_alert("白板删除成功");
+			// $(".messageItem").css({display:"inline-block"});
+			// setTimeout(function(){
+			// 	$(".messageItem").css({display:"none"});
+			// 	// window.opener=null;
+			// 	// window.open('','_self');
+			// 	// window.close();
+			// }, 3000)
 		}
 		else{
 			switch(getDatByPath(formData, "emResponse.boardcastResponse.category")){
@@ -1199,18 +1203,16 @@ var initMainView = function() {
 		// xhr.setRequestHeader('Content-Type', 'multipart/form-data');
 		xhr.send(form); //开始上传，发送form数据
 		function uploadComplete(e){
-			console.log(e, "uploadComplete");
 			$(".loading").css("display","none");
-			$(".content-a-upload").css("display","flex")
+			$(".content-a-upload").css("display","flex");
+			_alert('上传成功，点击<img src='+imgUrl+'></img>进行页面切换');
 		}
 		function uploadFailed(e){
-			console.log(e, "uploadFailed");
+			_alert("上传失败，请重新上传");
 		}
 		function progressFunction(e){
-			console.log($(".loading"));
 			$(".loading").css("display","block");
 			$(".content-a-upload").css("display","none")
-			console.log(e, "progressFunction");
 		}
 	}
 
@@ -1236,12 +1238,22 @@ var initMainView = function() {
 		currentObj = null;
 		// var url = SVG.get("imgBackgroud") && SVG.get("imgBackgroud").attr("href");
 		// draw.clear();
-		// _onDrawBackgroud(url);
 	}
 
 	var _deleteCacheMsg = function(EMFrame){
         var msgId = getDatByPath(EMFrame, "ackMsg.msgId");
 		msgId && messageCache.deleteMsg(msgId);
+	}
+
+	function _alert(str,callback){
+		$(".messageItem").html(str).css({display:"inline-block"});
+		setTimeout(function(){
+			$(".messageItem").css({display:"none"});
+			callback && callback();
+			// window.opener=null;
+			// window.open('','_self');
+			// window.close();
+		}, 3000)
 	}
 }
 
