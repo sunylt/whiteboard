@@ -1198,13 +1198,18 @@ var initMainView = function() {
 		};
 		// xhr.setRequestHeader('Content-Type', 'multipart/form-data');
 		xhr.send(form); //开始上传，发送form数据
-		var uploadComplete = function(e){
+		function uploadComplete(e){
 			console.log(e, "uploadComplete");
+			$(".loading").css("display","none");
+			$(".content-a-upload").css("display","flex")
 		}
-		var uploadFailed = function(e){
+		function uploadFailed(e){
 			console.log(e, "uploadFailed");
 		}
-		var progressFunction = function(e){
+		function progressFunction(e){
+			console.log($(".loading"));
+			$(".loading").css("display","block");
+			$(".content-a-upload").css("display","none")
 			console.log(e, "progressFunction");
 		}
 	}
