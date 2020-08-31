@@ -10,6 +10,7 @@ import formEMFrame from './handleResponse/formEMFrame';
 import makeEnterReq from './handleRequst/makeEnterReq';
 import makeSheetReq from './handleRequst/makeSheetReq';
 import makeActionReq from './handleRequst/makeActionReq';
+import makeMediaReq from './handleRequst/makeMediaReq';
 import messageCache from './messageCache';
 import imgUrl from '../icon/page.png'
 
@@ -27,6 +28,18 @@ headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
 console.log(headerUrlRest);
 var isCreater = getParams("isCreater") == 'true'? true: false;
+// var video = $("#videoPlay")[0];
+// // var video = document.getElementById('videoPlay');
+// // console.log(video,$("#videoPlay")[0]);
+// video.oncanplay = function () {
+// 	alert(' 客官，可以开始播放了');
+// }
+// video.onpause = function(e){
+// 	console.log(e, "onpause");
+// }
+// video.onplay = function(e){
+// 	console.log(e, "onplay");
+// }
 // var isCreater = true;
 
 // var draw = SVG('drawing').size(300, 300)
@@ -364,7 +377,6 @@ var initMainView = function() {
 		}
 		var formData = formEMFrame(data);
 		if(getDatByPath(formData, "emResponse.closeRsp.code") === 102){//白板被删除
-			console.log("删除白板---");
 			_alert("白板删除成功");
 			// $(".messageItem").css({display:"inline-block"});
 			// setTimeout(function(){
@@ -397,6 +409,73 @@ var initMainView = function() {
 				case 5:
 					var level =  getDatByPath(formData, "emResponse.boardcastResponse.level");
 					oprateAuth(level);
+					break;
+				case 6:
+					var keyBtn = true;
+					var mediaUrl =  getDatByPath(formData, "emResponse.boardcastResponse.mediaUrl");
+					var mediaId =  getDatByPath(formData, "emResponse.boardcastResponse.mediaId");
+					if(mediaUrl){
+						var id = "id_"+mediaId;
+						var videoHtml = '<video class="videoPlay" id='+id +' controls preload="metadata" controlslist="nodownload nofullscreen" src="" loop>您的浏览器不支持 video 标签。</video>';
+					}
+					videoHtml && $(".videoBody").append(videoHtml);
+					var mediaButton =  getDatByPath(formData, "emResponse.boardcastResponse.mediaButton");
+					var video = $("#id_"+mediaId)[0];
+					if(!mediaButton){
+						mediaUrl && $(".videoPlay").attr("src",mediaUrl).attr("id","id_"+mediaId);
+						$(".videoContainer").css("margin","0px");
+						$(".deletVideo").onclick = function(){ 
+							socket.emit("protobuf", makeMediaReq({
+								mediaButton: 0,
+								mediaId: mediaId
+							}), function(e){
+								// console.log("media ack", formEMFrame(e));
+							})
+						}
+						video.onpause = function(e){
+							if(!keyBtn){
+								return false
+							}
+							// console.log(e);
+							socket.emit("protobuf", makeMediaReq({
+								mediaButton: 2,
+								mediaId: mediaId
+							}), function(e){
+								// console.log("media ack", formEMFrame(e));
+							})
+							console.log(e, "onpause");
+						}
+						video.onplay = function(e){
+							if(!keyBtn){
+								return false
+							}
+							socket.emit("protobuf", makeMediaReq({
+								mediaButton: 1,
+								mediaId: mediaId
+							}), function(e){
+								// console.log("media ack", formEMFrame(e));
+							})
+							// console.log("onplay");
+						}
+					}
+					else if(mediaButton == 1){
+						keyBtn = false;
+						video && video.play();
+						console.log(video);
+						// socket.emit("protobuf", makeMediaReq({
+						// 	mediaButton: "CHOOSE",
+						// 	mediaId: String(page)
+						// }), function(e){
+						// 	console.log("media ack", formEMFrame(e));
+						// })
+					}
+					else if(mediaButton == 2){
+						keyBtn = false;
+						video && video.pause()
+					}
+					// else if(mediaButton == 0){
+					// 	$(".videoContainer").css("margin","-9999px");
+					// }
 			}
 		}
 	}

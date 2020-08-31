@@ -30,7 +30,8 @@ var getAll = function(){
                   "enterReq",
                   "actionReq",
                   "closeReq",
-                  "sheetReq"
+                  "sheetReq",
+                  "mediaReq"
                 ]
               }
             },
@@ -66,6 +67,10 @@ var getAll = function(){
               "sheetReq": {
                 "type": "SheetReq",
                 "id": 6
+              },
+              "mediaReq": {
+                "type": "MediaReq",
+                "id": 9
               }
             },
             "nested": {
@@ -76,7 +81,8 @@ var getAll = function(){
                   "ACTION": 20,
                   "CLOSE": 30,
                   "SHEET": 40,
-                  "BOARDCAST": 50
+                  "BOARDCAST": 50,
+                  "MEDIA": 70
                 }
               }
             }
@@ -132,6 +138,18 @@ var getAll = function(){
                   "CHOOSE": 3,
                   "RELOAD": 4
                 }
+              }
+            }
+          },
+          "MediaReq": {
+            "fields": {
+              "mediaId": {
+                "type": "string",
+                "id": 1
+              },
+              "mediaButton": {
+                "type": "int32",
+                "id": 2
               }
             }
           },
@@ -203,6 +221,10 @@ var getAll = function(){
               "level": {
                 "type": "int32",
                 "id": 3
+              },
+              "layout": {
+                "type": "int32",
+                "id": 4
               }
             }
           },
@@ -323,6 +345,18 @@ var getAll = function(){
               "level": {
                 "type": "int32",
                 "id": 5
+              },
+              "mediaUrl": {
+                "type": "string",
+                "id": 6
+              },
+              "mediaId": {
+                "type": "string",
+                "id": 7
+              },
+              "mediaButton": {
+                "type": "int32",
+                "id": 8
               }
             },
             "nested": {
@@ -333,7 +367,8 @@ var getAll = function(){
                   "SHEET_PAGE": 2,
                   "CURRENT_PAGE": 3,
                   "ALL_PAGE": 4,
-                  "FRAME": 5
+                  "FRAME": 5,
+                  "MEDIA": 6
                 }
               }
             }

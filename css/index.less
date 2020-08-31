@@ -379,6 +379,68 @@ svg{
 		}
 	}
 }
+.videoContainer{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	border-radius: 4px;
+	overflow: hidden;
+	height: 100vh;
+	width: 100vw;
+	margin-left: -150vw;
+	.videoHead{
+		display: flex;
+		height: 40px;
+		justify-content: space-between;
+    align-items: center;
+		// background-image: linear-gradient(180deg, #E0E1E0 0%, #CDCDCC 100%);
+		background: #ccc;
+		padding: 0 8px;
+		img{
+			display: inline;
+		}
+		>div:nth-child(1){
+			display: flex;
+			align-items: center;
+    	justify-content: center;
+			img{
+				width: 28px;
+			}
+			span{
+				margin-left: 5px;
+			}
+		}
+		>div:nth-child(2){
+			display: flex;
+			align-items: center;
+    	justify-content: center;
+			img{
+				width: 20px;
+			}
+			// display: inline-block;
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			background: #FF756E;
+			text-align: center;
+			opacity: 0.6;
+		}
+		>div:nth-child(2):hover{
+			background: #ff4d4f;
+		}
+	}
+	.videoBody{
+		height: calc(100vh - 40px);
+		background: #000;
+		video{
+			height: 100%;
+			width: 100%;
+			// width: 480px;
+			pointer-events: auto;
+			outline: none;
+		}
+	}
+}
 #testChoose{
 	width: 36px;
     height: 36px;
