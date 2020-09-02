@@ -150,6 +150,10 @@ var getAll = function(){
               "mediaButton": {
                 "type": "int32",
                 "id": 2
+              },
+              "playTime": {
+                "type": "string",
+                "id": 3
               }
             }
           },
@@ -225,6 +229,10 @@ var getAll = function(){
               "layout": {
                 "type": "int32",
                 "id": 4
+              },
+              "ratio": {
+                "type": "string",
+                "id": 5
               }
             }
           },
@@ -357,6 +365,10 @@ var getAll = function(){
               "mediaButton": {
                 "type": "int32",
                 "id": 8
+              },
+              "playTime": {
+                "type": "string",
+                "id": 9
               }
             },
             "nested": {

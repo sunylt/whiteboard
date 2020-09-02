@@ -96,7 +96,6 @@ message EnterRsp{
 	Confr confr = 2;
 	int32 level = 3;
 	int32 layout = 4;
-	string ratio = 5;
 }
 
 message Board{
@@ -164,7 +163,7 @@ message BoardcastResponse{
 	int32 level = 5;
 	string mediaUrl = 6;
 	string mediaId = 7;
-	int32 mediaButton = 8; //1关闭，2播放，3暂停, 4重新播放, 5设置播放时间, 6查询播放时间
+	int32 mediaButton = 8; //1关闭，2播放，3暂停, 4重新播放, 5设置播放时间
 	string playTime = 9;
 }
 

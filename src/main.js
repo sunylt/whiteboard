@@ -6,13 +6,14 @@ import Hammer from 'hammerjs';
 import svgPanZoom from 'svg-pan-zoom';
 
 import {getDatByPath, GetQueryString, getUniqueId, getParams} from './utils';
+import { _uploadFile } from './commentTool/upload';
+import { _alert } from './commentTool/alertMessage';
 import formEMFrame from './handleResponse/formEMFrame';
 import makeEnterReq from './handleRequst/makeEnterReq';
 import makeSheetReq from './handleRequst/makeSheetReq';
 import makeActionReq from './handleRequst/makeActionReq';
-import makeMediaReq from './handleRequst/makeMediaReq';
+import {dispatcherMedia} from './dispatcherEvent/media';
 import messageCache from './messageCache';
-import imgUrl from '../icon/page.png'
 
 var headerUrlRest = (window.location.protocol === 'https:' ? 'https:' : 'http:') + "//rtc-turn4-hsb.easemob.com";
 var headerUrlSock = (window.location.protocol === 'https:' ? 'https:' : 'http:') + "//rtc-turn4-hsb.easemob.com";
@@ -26,7 +27,6 @@ var socketIOPath = GetQueryString("socketIOPath");
 var appkey = getParams("appKey");
 headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
-console.log(headerUrlRest);
 var isCreater = getParams("isCreater") == 'true'? true: false;
 // var video = $("#videoPlay")[0];
 // // var video = document.getElementById('videoPlay');
@@ -295,8 +295,6 @@ var initMainView = function() {
                 console.log("serverce enter responce");
 				var masterId = getDatByPath(data, "emResponse.enterRsp.confr.masterId");
 				var level = getDatByPath(data, "emResponse.enterRsp.level");
-
-                //_initView(masterId == userId);
                 _initView(isCreater,level);
 
                 indexPage = getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.index") ? getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.index") : 0;
@@ -368,6 +366,7 @@ var initMainView = function() {
 			}
 		}
 		var oprateAuth = function(el){
+			tool.shape = '';
 			if(el > 3){
 				$(".member .tool").css({"display":"flex"})
 			}
@@ -411,71 +410,7 @@ var initMainView = function() {
 					oprateAuth(level);
 					break;
 				case 6:
-					var keyBtn = true;
-					var mediaUrl =  getDatByPath(formData, "emResponse.boardcastResponse.mediaUrl");
-					var mediaId =  getDatByPath(formData, "emResponse.boardcastResponse.mediaId");
-					if(mediaUrl){
-						var id = "id_"+mediaId;
-						var videoHtml = '<video class="videoPlay" id='+id +' controls preload="metadata" controlslist="nodownload nofullscreen" src="" loop>您的浏览器不支持 video 标签。</video>';
-					}
-					videoHtml && $(".videoBody").append(videoHtml);
-					var mediaButton =  getDatByPath(formData, "emResponse.boardcastResponse.mediaButton");
-					var video = $("#id_"+mediaId)[0];
-					if(!mediaButton){
-						mediaUrl && $(".videoPlay").attr("src",mediaUrl).attr("id","id_"+mediaId);
-						$(".videoContainer").css("margin","0px");
-						$(".deletVideo").onclick = function(){ 
-							socket.emit("protobuf", makeMediaReq({
-								mediaButton: 0,
-								mediaId: mediaId
-							}), function(e){
-								// console.log("media ack", formEMFrame(e));
-							})
-						}
-						video.onpause = function(e){
-							if(!keyBtn){
-								return false
-							}
-							// console.log(e);
-							socket.emit("protobuf", makeMediaReq({
-								mediaButton: 2,
-								mediaId: mediaId
-							}), function(e){
-								// console.log("media ack", formEMFrame(e));
-							})
-							console.log(e, "onpause");
-						}
-						video.onplay = function(e){
-							if(!keyBtn){
-								return false
-							}
-							socket.emit("protobuf", makeMediaReq({
-								mediaButton: 1,
-								mediaId: mediaId
-							}), function(e){
-								// console.log("media ack", formEMFrame(e));
-							})
-							// console.log("onplay");
-						}
-					}
-					else if(mediaButton == 1){
-						keyBtn = false;
-						video && video.play();
-						console.log(video);
-						// socket.emit("protobuf", makeMediaReq({
-						// 	mediaButton: "CHOOSE",
-						// 	mediaId: String(page)
-						// }), function(e){
-						// 	console.log("media ack", formEMFrame(e));
-						// })
-					}
-					else if(mediaButton == 2){
-						keyBtn = false;
-						video && video.pause()
-					}
-					// else if(mediaButton == 0){
-					// 	$(".videoContainer").css("margin","-9999px");
-					// }
+					dispatcherMedia(formData, socket);
 			}
 		}
 	}
@@ -1248,52 +1183,7 @@ var initMainView = function() {
 	}
 
 
-	var _uploadFile = function(e, is, id){
-		var url = '';
-		var orgName = appkey.split("#")[0];
-		var appName = appkey.split("#")[1];
-		if(is){
-			url = headerUrlRest + "/"+ orgName +"/"+ appName +"/whiteboards/upload/dynamic/" + userId;
-		}
-		else{
-			url = headerUrlRest +  "/"+ orgName +"/"+ appName +"/whiteboards/upload/" + userId;
-		}
-		// var url = headerUrlRest + "/222/111/whiteboards/upload/" + userId;
-		var fileObj = document.getElementById(id);
-		var file = fileObj.files[0];
-		if(!file){
-			return false;
-		}
-		var form = new FormData(); // FormData 对象
-		form.append("file", file); // 文件对象
-		fileObj.value = "";
-
-		var xhr = new XMLHttpRequest();  // XMLHttpRequest 对象
-		xhr.open("post", url); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
-		xhr.onload = uploadComplete; //请求完成
-		xhr.onerror =  uploadFailed; //请求失败
-
-		xhr.upload.onprogress = progressFunction;//【WhiteBoardService上传进度调用方法实现】
-		xhr.upload.onloadstart = function(){//上传开始执行方法
-			// ot = new Date().getTime();   //设置上传开始时间
-			// oloaded = 0;//设置上传开始时，以上传的文件大小为0
-			console.log("start");
-		};
-		// xhr.setRequestHeader('Content-Type', 'multipart/form-data');
-		xhr.send(form); //开始上传，发送form数据
-		function uploadComplete(e){
-			$(".loading").css("display","none");
-			$(".content-a-upload").css("display","flex");
-			_alert('上传成功，点击<img src='+imgUrl+'></img>进行页面切换');
-		}
-		function uploadFailed(e){
-			_alert("上传失败，请重新上传");
-		}
-		function progressFunction(e){
-			$(".loading").css("display","block");
-			$(".content-a-upload").css("display","none")
-		}
-	}
+	
 
     var _changPage = function(e){
 		var page;
@@ -1322,17 +1212,6 @@ var initMainView = function() {
 	var _deleteCacheMsg = function(EMFrame){
         var msgId = getDatByPath(EMFrame, "ackMsg.msgId");
 		msgId && messageCache.deleteMsg(msgId);
-	}
-
-	function _alert(str,callback){
-		$(".messageItem").html(str).css({display:"inline-block"});
-		setTimeout(function(){
-			$(".messageItem").css({display:"none"});
-			callback && callback();
-			// window.opener=null;
-			// window.open('','_self');
-			// window.close();
-		}, 3000)
 	}
 }
 

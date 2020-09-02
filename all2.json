@@ -149,6 +149,10 @@
             "mediaButton": {
               "type": "int32",
               "id": 2
+            },
+            "playTime": {
+              "type": "string",
+              "id": 3
             }
           }
         },
@@ -224,6 +228,10 @@
             "layout": {
               "type": "int32",
               "id": 4
+            },
+            "ratio": {
+              "type": "string",
+              "id": 5
             }
           }
         },
@@ -356,6 +364,10 @@
             "mediaButton": {
               "type": "int32",
               "id": 8
+            },
+            "playTime": {
+              "type": "string",
+              "id": 9
             }
           },
           "nested": {

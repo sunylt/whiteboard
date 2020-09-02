@@ -16,7 +16,8 @@ var makeMediaReq = function(option){
 	
 	// SheetReqMessage.index = option.index;  //*****
     MediaReqMessage.mediaButton = option.mediaButton;
-    MediaReqMessage.mediaId = option.mediaId;
+	MediaReqMessage.mediaId = option.mediaId;
+	MediaReqMessage.playTime = option.playTime;
 
 	var EMRequest = root.lookup("protobuf.EMRequest");
 	var EMRequestMessage = EMRequest.decode(emptyMessage);
