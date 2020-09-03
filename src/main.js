@@ -27,15 +27,18 @@ headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
 console.log(headerUrlRest);
 var isCreater = getParams("isCreater") == 'true'? true: false;
+var ratio = getParams("ratio") || "4:3";
+// var ratio = "4:3";
+var viewBoxValStr= "0 0 " + (ratio.split(":"))[0]*2100 + " " + (ratio.split(":"))[1]*2100;
 // var isCreater = true;
 
 // var draw = SVG('drawing').size(300, 300)
 // var rect = draw.rect(100, 100).attr({ fill: '#f06' })
 var initMainView = function() {
-    var scale = 0.8;
+    var scale = 1;
 	var windowWidth = $(window).width()*scale;
 	var windowHeight = $(window).height()*scale;
-	var viewBoxVal = "0 0 4200 2100";
+	var viewBoxVal = viewBoxValStr;
 	var viewBoxValues = viewBoxVal.split(" ");
 	var viewBoxWidth = viewBoxVal.split(" ")[2];
     var viewBoxHeight = viewBoxVal.split(" ")[3];
