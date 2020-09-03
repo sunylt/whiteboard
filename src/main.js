@@ -45,7 +45,7 @@ var isCreater = getParams("isCreater") == 'true'? true: false;
 // var draw = SVG('drawing').size(300, 300)
 // var rect = draw.rect(100, 100).attr({ fill: '#f06' })
 var initMainView = function() {
-    var scale = 0.8;
+    var scale = 1;
 	var windowWidth = $(window).width()*scale;
 	var windowHeight = $(window).height()*scale;
 	var viewBoxVal = "0 0 2800 2100";
@@ -368,10 +368,10 @@ var initMainView = function() {
 		var oprateAuth = function(el){
 			tool.shape = '';
 			if(el > 3){
-				$(".member .tool").css({"display":"flex"})
+				$(".member").css({"display":"flex"})
 			}
 			else{
-				$(".member .tool").css({"display":"none"})
+				$(".member").css({"display":"none"})
 			}
 		}
 		var formData = formEMFrame(data);
@@ -444,10 +444,10 @@ var initMainView = function() {
             $(".tool").css("display","flex");
         }
         else if(el > 3){
-            $(".member  .tool").css("display","flex");
+            $(".member").css("display","flex");
 		}
 		else{
-			$(".member  .tool").css("display","none");
+			$(".member").css("display","none");
 		}
 	}
 
