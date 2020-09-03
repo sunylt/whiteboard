@@ -22,15 +22,16 @@ export function dispatcherMedia(formData, socket){
         video = $("#id_"+mediaId)[0];
         $(".deletVideo")[0].onclick = function(){ 
             socket.emit("protobuf", makeMediaReq({
-                mediaButton: 3,
-                mediaId: mediaId
+                mediaButton: 1,
+                mediaId: mediaId,
+                layTime:(video.currentTime).toString() || ""
             }), function(e){
                 console.log("media ack", formEMFrame(e));
             })
         }
         video.onpause = function(e){
             socket.emit("protobuf", makeMediaReq({
-                mediaButton: 2,
+                mediaButton: 3,
                 mediaId: mediaId,
                 playTime:(video.currentTime).toString() || ""
             }), function(e){
@@ -40,7 +41,7 @@ export function dispatcherMedia(formData, socket){
         }
         video.onplay = function(e){
             socket.emit("protobuf", makeMediaReq({
-                mediaButton: 1,
+                mediaButton: 2,
                 mediaId: mediaId,
                 playTime:(video.currentTime).toString() || ''
             }), function(e){
@@ -56,6 +57,10 @@ export function dispatcherMedia(formData, socket){
         // case 0:
         //     break;
         case 1:
+            $(".videoBody").empty();
+            $(".videoContainer").css("margin","-150vw");
+            break;
+        case 2:
             video.currentTime=parseFloat(playTime) || 0;
             var videoPromise = video.play()
             if(videoPromise){
@@ -72,7 +77,7 @@ export function dispatcherMedia(formData, socket){
 
             }
             break;
-        case 2:
+        case 3:
             video.currentTime=parseFloat(playTime) || 0;
             if(video && video.pause()){
                 video
@@ -86,10 +91,6 @@ export function dispatcherMedia(formData, socket){
                 })
             }
             break;
-        case 3:
-            $(".videoBody").empty();
-            $(".videoContainer").css("margin","-150vw");
-            break;
         // case 5:
             
         //     video.currentTime=parseFloat(playTime);
@@ -97,7 +98,7 @@ export function dispatcherMedia(formData, socket){
         //     break;
         case 6:
             socket.emit("protobuf", makeMediaReq({
-                mediaButton: 5,
+                mediaButton: video.paused ? 3: 2,
                 mediaId: mediaId,
                 playTime:(video.currentTime).toString()
             }), function(e){
