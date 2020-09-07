@@ -445,7 +445,6 @@ var initMainView = function() {
 			$(".oprate").addClass("layout_left");
 		}
 		else if(layout == 2){
-			console.log(222);
 			$(".oprate").removeClass("layout_left");
 			$(".oprate").addClass("layout_top");
 		}
