@@ -147,6 +147,9 @@ var initMainView = function() {
 						left = parseInt($("#drawSvg").css("left"));
 						break;
 					case "panmove":
+						if(tool.shape == "text" || tool.shape == "pen" || tool.shape == "rect" || tool.shape == "circle"){
+							return false
+						}
 						var newLeft = ev.center.x - svgPositionInit.x + left > 0 ? 0 : ev.center.x - svgPositionInit.x + left;
 						var newTop = ev.center.y - svgPositionInit.y + top > 0 ? 0 : ev.center.y - svgPositionInit.y + top;
 						if(Math.abs(newLeft) > svgWidth - $("#drawsvgContainer").css("width").split("px")[0]){
