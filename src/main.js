@@ -28,19 +28,9 @@ var appkey = getParams("appKey");
 headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
 var isCreater = getParams("isCreater") == 'true'? true: false;
-// var video = $("#videoPlay")[0];
-// // var video = document.getElementById('videoPlay');
-// // console.log(video,$("#videoPlay")[0]);
-// video.oncanplay = function () {
-// 	alert(' 客官，可以开始播放了');
-// }
-// video.onpause = function(e){
-// 	console.log(e, "onpause");
-// }
-// video.onplay = function(e){
-// 	console.log(e, "onplay");
-// }
-// var isCreater = true;
+var ratio = getParams("ratio") || "4:3";
+// var ratio = "4:3";
+var viewBoxValStr= "0 0 " + (ratio.split(":"))[0]*2100 + " " + (ratio.split(":"))[1]*2100;
 
 // var draw = SVG('drawing').size(300, 300)
 // var rect = draw.rect(100, 100).attr({ fill: '#f06' })
@@ -48,7 +38,7 @@ var initMainView = function() {
     var scale = 1;
 	var windowWidth = $(window).width()*scale;
 	var windowHeight = $(window).height()*scale;
-	var viewBoxVal = "0 0 2800 2100";
+	var viewBoxVal = viewBoxValStr;
 	var viewBoxValues = viewBoxVal.split(" ");
 	var viewBoxWidth = viewBoxVal.split(" ")[2];
     var viewBoxHeight = viewBoxVal.split(" ")[3];
@@ -295,7 +285,8 @@ var initMainView = function() {
                 console.log("serverce enter responce");
 				var masterId = getDatByPath(data, "emResponse.enterRsp.confr.masterId");
 				var level = getDatByPath(data, "emResponse.enterRsp.level");
-                _initView(isCreater,level);
+				var layout = getDatByPath(data, "emResponse.enterRsp.layout");
+                _initView(isCreater,level,layout);
 
                 indexPage = getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.index") ? getDatByPath(data, "emResponse.enterRsp.confr.currentBoard.index") : 0;
                 $("#currentPage").text(Number(indexPage) + 1);
@@ -417,7 +408,7 @@ var initMainView = function() {
 
 	
 
-	var _initView = function(isAdmin, el){
+	var _initView = function(isAdmin, el,layout){
 	 	$(window).resize(function(){
 		    _resizeSvg();
 		});
@@ -448,6 +439,19 @@ var initMainView = function() {
 		}
 		else{
 			$(".member").css("display","none");
+		}
+		if(layout == 1){
+			$(".oprate").removeClass("layout_top");
+			$(".oprate").addClass("layout_left");
+		}
+		else if(layout == 2){
+			console.log(222);
+			$(".oprate").removeClass("layout_left");
+			$(".oprate").addClass("layout_top");
+		}
+		else{
+			$(".oprate").removeClass("layout_left");
+			$(".oprate").removeClass("layout_top");
 		}
 	}
 
