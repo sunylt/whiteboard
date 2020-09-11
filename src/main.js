@@ -361,6 +361,7 @@ var initMainView = function() {
 		}
 		var oprateAuth = function(el){
 			tool.shape = '';
+			$(".textArea").remove();
 			if(el > 3){
 				$(".member").css({"display":"flex"})
 			}
