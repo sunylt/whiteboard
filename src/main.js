@@ -362,6 +362,7 @@ var initMainView = function() {
 		var oprateAuth = function(el){
 			tool.shape = '';
 			$(".textArea").remove();
+			$(".tool div").removeClass("selected");
 			if(el > 3){
 				$(".member").css({"display":"flex"})
 			}
