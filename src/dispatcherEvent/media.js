@@ -16,15 +16,22 @@ export function dispatcherMedia(formData, socket){
     var mediaUrl =  getDatByPath(formData, "emResponse.boardcastResponse.mediaUrl");
     var mediaId =  getDatByPath(formData, "emResponse.boardcastResponse.mediaId");
     var playTime = getDatByPath(formData, "emResponse.boardcastResponse.playTime");
+    var errKey = false;
     var id = "id_"+mediaId;
     var video = $("#id_"+mediaId)[0];
+    var lastTime = 0;
+    
     if(mediaUrl && !$(".videoPlay").length){
-        var controls = isCreater? 'controls' : ''
-        var videoHtml = '<video class="videoPlay" id='+id + ' preload="metadata" '+ controls +' controlslist="nodownload nofullscreen" src="'+mediaUrl+'" loop>您的浏览器不支持 video 标签。</video>';
+        var controls = isCreater ? 'controls' : '';
+        var muted = isCreater ? '' : 'muted';
+        !isCreater && $(".volume").css("display","block");
+        !isCreater && _alert("当前视频处于静音状态，可以点击右下角按钮打开视频声音。");
+        var videoHtml = videoHtml = '<video class="videoPlay" '+ muted +' id='+id + ' '+ controls +' name="media"><source src="'+mediaUrl+'" type="video/mp4"></video>';
         $(".videoBody").empty();
         $(".videoBody").append(videoHtml);
         $(".videoContainer").css("margin","0px");
         video = $("#id_"+mediaId)[0];
+        // video.load();
         if(/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)){
             video.load();
         }
@@ -32,13 +39,27 @@ export function dispatcherMedia(formData, socket){
             isCreater ? socket.emit("protobuf", makeMediaReq({
                 mediaButton: 1,
                 mediaId: mediaId,
-                layTime:(video.currentTime).toString() || ""
+                // layTime:(video.currentTime).toString() || ""
             }), function(e){
                 // console.log("media ack", formEMFrame(e));
             })
             : _alert("没有权限操作");
         }
+        $(".volume").click(function(){
+            if(video.muted){
+                console.log(video.muted);
+                $(this).addClass("selectMute");
+                video.muted = false;
+            }
+            else{
+                $(this).removeClass("selectMute");
+                video.muted = true;
+            }
+        })
         video.onpause = function(e){
+            if(errKey){
+                return false
+            }
             isCreater && socket.emit("protobuf", makeMediaReq({
                 mediaButton: 3,
                 mediaId: mediaId,
@@ -48,6 +69,9 @@ export function dispatcherMedia(formData, socket){
             })
         }
         video.onplay = function(e){
+            if(errKey){
+                return false
+            }
             isCreater && socket.emit("protobuf", makeMediaReq({
                 mediaButton: 2,
                 mediaId: mediaId,
@@ -56,6 +80,18 @@ export function dispatcherMedia(formData, socket){
                 // console.log("media ack", formEMFrame(e));
             })
         }
+        // video.ontimeupdate = function(e){
+        //     var current = video.currentTime;
+        //     if(current - lastTime > 2) {
+        //         video.currentTime = lastTime
+        //         // errKey = true;
+        //         // video.pause();
+        //         // video.currentTime = e.target.currentTime;
+        //         // video.play()
+        //     } else {
+        //         lastTime = current;
+        //     }
+        // }
     }
     var mediaButton =  getDatByPath(formData, "emResponse.boardcastResponse.mediaButton");
     
@@ -67,35 +103,48 @@ export function dispatcherMedia(formData, socket){
             $(".videoContainer").css("margin","-150vw");
             break;
         case 2:
-            video.currentTime=parseFloat(playTime) || 0;
-            var videoPromise = video.play()
-            if(videoPromise){
-                videoPromise
-                .then(()=>{
-                    console.log("播放啦");
-                })
-                .catch(function(err,e){
-                    console.log("不能播放请手动点击");
-                    alert("设置 Safari浏览器 -> 此网站设置 ->自动播放 -> 允许全部自动播放");
-                    return null
-                })
-            }
+            setTimeout(function(){
+                video.currentTime=parseFloat(playTime) || 0;
+                console.log(playTime,'-----');
+                console.log(parseFloat(playTime) || 0)
+                console.log(video.currentTime);
+                var videoPromise = video.play();
+                console.log(video.currentTime);
+                // video.volume = 0.5;
+                // video.muted = false
+                if(videoPromise){
+                    videoPromise
+                    .then(()=>{
+                        console.log("播放啦");
+                    })
+                    .catch(function(err,e){
+                        console.log("不能播放请手动点击-----",err);
+                        errKey = true;
+                        return null
+                    })
+                }
+            },0)
+            
             break;
         case 3:
-            if(video){
-                video.currentTime=parseFloat(playTime) || 0;
-            }
-            if(video && video.pause()){
-                video
-                .pause()
-                .then(()=>{
-                    // console.log("播放啦");
-                })
-                .catch(function(err){
-                    console.log("暂停错误");
-                    return null
-                })
-            }
+            setTimeout(function(){
+                if(video){
+                    video.currentTime=parseFloat(playTime) || 0;
+                }
+                console.log(video,'----');
+                if(video && video.pause()){
+                    video
+                    .pause()
+                    .then(()=>{
+                        console.log("暂停啦");
+                    })
+                    .catch(function(err){
+                        errKey = true;
+                        console.log("暂停错误");
+                        return null
+                    })
+                }
+            },0)
             break;
         case 6:
             socket.emit("protobuf", makeMediaReq({

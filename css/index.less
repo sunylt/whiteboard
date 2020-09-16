@@ -418,6 +418,7 @@ svg{
 	height: 100vh;
 	width: 100vw;
 	margin-left: -150vw;
+	cursor: default;
 	.videoHead{
 		display: flex;
 		height: 40px;
@@ -451,7 +452,7 @@ svg{
 			width: 28px;
 			height: 28px;
 			border-radius: 50%;
-			background: #FF756E;
+			background:red;
 			text-align: center;
 			opacity: 0.6;
 		}
@@ -468,6 +469,33 @@ svg{
 			// width: 480px;
 			pointer-events: auto;
 			outline: none;
+		}
+	}
+	.volume{
+		display: none;
+		position: absolute;
+		bottom: 30px;
+		right: 20px;
+		background: #aaa;
+    border-radius: 50%;
+    opacity: 0.8;
+		cursor: pointer;
+		img{
+			transform: scale(0.7);
+		}
+		img:nth-child(1){
+			display: block;
+		}
+		img:nth-child(2){
+			display: none;
+		}
+		&.selectMute{
+			img:nth-child(2){
+				display: block;
+			}
+			img:nth-child(1){
+				display: none;
+			}
 		}
 	}
 }
