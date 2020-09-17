@@ -447,15 +447,18 @@ var initMainView = function() {
 		}
 		if(layout == 1){
 			$(".oprate").removeClass("layout_top");
+			$(".oprate").removeClass("layout_bottom");
 			$(".oprate").addClass("layout_left");
 		}
 		else if(layout == 2){
 			$(".oprate").removeClass("layout_left");
+			$(".oprate").removeClass("layout_bottom");
 			$(".oprate").addClass("layout_top");
 		}
 		else{
 			$(".oprate").removeClass("layout_left");
 			$(".oprate").removeClass("layout_top");
+			$(".oprate").addClass("layout_bottom");
 		}
 	}
 
