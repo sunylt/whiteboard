@@ -27,7 +27,10 @@ var socketIOPath = GetQueryString("socketIOPath");
 var appkey = getParams("appKey");
 headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
-var isCreater = getParams("isCreater") == 'true'? true: false;
+
+var creater = getParams("isCreater") == 'true' ? true : false;
+var globle = getParams("globalButton") == '1'? true: false;
+var isCreater = creater ? creater : globle;
 var ratio = getParams("ratio") || "4:3";
 // var ratio = "4:3";
 var viewBoxValStr= "0 0 " + (ratio.split(":"))[0]*2100 + " " + (ratio.split(":"))[1]*2100;
