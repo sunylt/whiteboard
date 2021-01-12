@@ -103,15 +103,26 @@ export function dispatcherMedia(formData, socket){
             $(".videoContainer").css("margin","-150vw");
             break;
         case 2:
+            // video.play();
+            // video.pause();
             setTimeout(function(){
                 video.currentTime=parseFloat(playTime) || 0;
                 console.log(playTime,'-----');
                 console.log(parseFloat(playTime) || 0)
                 console.log(video.currentTime);
-                var videoPromise = video.play();
+                
+                // video.prop('muted', false);
                 console.log(video.currentTime);
                 // video.volume = 0.5;
-                // video.muted = false
+
+                var u = navigator.userAgent
+                if (u.indexOf('iPhone') > -1) {
+                    video.muted = true;
+                    video.controls = true;
+                    video.controlsList = 'nofullscreen nodownload noremote footbar';
+                }
+
+                var videoPromise = video.play();
                 if(videoPromise){
                     videoPromise
                     .then(()=>{
