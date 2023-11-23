@@ -25,6 +25,7 @@ var userId = GetQueryString("userId");
 // var token = GetQueryString("token");
 var socketIOPath = GetQueryString("socketIOPath");
 var appkey = getParams("appKey");
+var resourceServer = getParams("resourceServer");
 headerUrlRest = GetQueryString("domainName");
 headerUrlSock = GetQueryString("socketIOUrl");
 
@@ -572,6 +573,13 @@ var initMainView = function() {
         $(".thumbnailList").empty()
         $.each(list, function(i, v){
 			var imgUrl = v.background;
+			
+			// 替换缩略图中的资源domain
+			if(imgUrl && resourceServer){
+				var urlInfo = imgUrl.split("/whiteboards/")
+				imgUrl = resourceServer + "/whiteboards/" + urlInfo[1]
+			}
+
 			var className = indexPage == i ? '<div class="drawBorder selected">' : '<div class="drawBorder">';
             $(".thumbnailList").append($('<div class="thumbnailItem" data-index='+ i +'>' + className + '<img src='+ imgUrl +'></div><p>'+ (i+1) +'</p></div>'))
         });
@@ -591,6 +599,7 @@ var initMainView = function() {
     }
 
 	var _onDrawBackgroud = function(url){
+		var urlInfo = url.split(".local/")
 		$(".svg_backgroud")
 		.css({
 			width:draw.attr("width"),
@@ -603,6 +612,9 @@ var initMainView = function() {
 			$(".svg_backgroud").attr("src", url);
 		}
 		else if(url){
+			if(resourceServer){
+				url = resourceServer + "/whiteboards/" + urlInfo[1]
+			}
 			draw.
 			image(url, "100%")
 			.attr("id","imgBackgroud")
